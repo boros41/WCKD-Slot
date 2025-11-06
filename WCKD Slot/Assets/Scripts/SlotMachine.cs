@@ -45,4 +45,6 @@ public class SlotMachine : MonoBehaviour
         print($"Reel 3 strip length: {_reel3.StripLength()}");
         print($"Reel 4 strip length: {_reel4.StripLength()}");
     }
+
+
 }
