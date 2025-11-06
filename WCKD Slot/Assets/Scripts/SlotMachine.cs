@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Unity.VisualScripting;
@@ -44,7 +45,20 @@ public class SlotMachine : MonoBehaviour
         print($"Reel 2 strip length: {_reel2.StripLength()}");
         print($"Reel 3 strip length: {_reel3.StripLength()}");
         print($"Reel 4 strip length: {_reel4.StripLength()}");
+
+        PopulateStartingSymbols();
     }
 
+    private void PopulateStartingSymbols()
+    {
+        print($"Reel 1 stop indices: {string.Join(", ", _reel1.StopIndices())}");
 
+        List<int> stopIndices = _reel1.StopIndices();
+        foreach (int i in stopIndices)
+        {
+            print(_reel1.Strip[i]);
+
+            // TODO: instantiate respective symbol from _reel1.StopIndices(), do the same for other reels
+        }
+    }
 }
