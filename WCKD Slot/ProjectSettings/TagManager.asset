@@ -3,7 +3,11 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 3
-  tags: []
+  tags:
+  - Reel 1
+  - Reel 2
+  - Reel 3
+  - Reel 4
   layers:
   - Default
   - TransparentFX

@@ -18,5 +18,5 @@ public enum Symbols
     Rose,
     LilyPad,
     Flower,
-    Tree,
+    DeadTree,
 }
