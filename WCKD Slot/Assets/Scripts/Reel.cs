@@ -6,7 +6,7 @@ using UnityEngine.WSA;
 
 public class Reel
 {
-    public ReadOnlyCollection<Symbols> Strip { get; }
+    public ReadOnlyCollection<Symbol> Strip { get; }
     private int _stopIndex;
     private readonly List<int> _stopIndices = new List<int>(4); // 4 == visible reel length
 
@@ -15,12 +15,25 @@ public class Reel
     public const float Reel3X = 0.6453333f;
     public const float Reel4X = 1.932f;
 
+    // out of view symbols above the slot machine
+    public const float Row1UpperY = 5.8673332f;
+    public const float Row2UpperY = 4.7999999f;
+    public const float Row3UpperY = 3.7326666f;
+    public const float Row4UpperY = 2.6653333f;
+
+    // symbols in the view of the slot machine
     public const float Row1Y = 1.598f;
     public const float Row2Y = 0.5306667f;
     public const float Row3Y = -0.5366666f;
     public const float Row4Y = -1.604f;
 
-    public Reel(ReadOnlyCollection<Symbols> strip)
+    // out of view symbols beneath the slot machine, TODO: these should probably be mirrors of the uppers
+    public const float Row1LowerY = -2.6713333f;
+    public const float Row2LowerY = -3.7386666f;
+    public const float Row3LowerY = -4.8059999f;
+    public const float Row4LowerY = -5.8733332f;
+
+    public Reel(ReadOnlyCollection<Symbol> strip)
     {
         Strip = strip;
     }
@@ -66,5 +79,30 @@ public class Reel
 
         Debug.Log($"Reel {reel} strip length: {Strip.Count}");
         Debug.Log($"Reel {reel} symbols: {numberedSymbols}");
+    }
+
+    // moving these symbol backgrounds will also move the symbols since they are children
+    public void Spin(List<GameObject> symbolBackgrounds)
+    {
+        float spinDuration = 2.5f;
+
+        // move the upper symbols into view of the slot machine
+        LeanTween.moveY(symbolBackgrounds[4], Row1Y, spinDuration).setEase(LeanTweenType.easeOutBack);
+        LeanTween.moveY(symbolBackgrounds[5], Row2Y, spinDuration).setEase(LeanTweenType.easeOutBack);
+        LeanTween.moveY(symbolBackgrounds[6], Row3Y, spinDuration).setEase(LeanTweenType.easeOutBack);
+        LeanTween.moveY(symbolBackgrounds[7], Row4Y, spinDuration).setEase(LeanTweenType.easeOutBack);
+
+        // move the symbols already in view to out of view beneath the slot machine
+        LeanTween.moveY(symbolBackgrounds[0], Row1LowerY, spinDuration).setEase(LeanTweenType.easeOutBack);
+        LeanTween.moveY(symbolBackgrounds[1], Row2LowerY, spinDuration).setEase(LeanTweenType.easeOutBack);
+        LeanTween.moveY(symbolBackgrounds[2], Row3LowerY, spinDuration).setEase(LeanTweenType.easeOutBack);
+        LeanTween.moveY(symbolBackgrounds[3], Row4LowerY, spinDuration).setEase(LeanTweenType.easeOutBack);
+
+
+        // TODO: Once old symbols are out of view, delete them.
+        // TODO: Implement sprite mask to prevent of view symbols from being shown. 
+        // TODO: Determine any winning symbols. Did I even finish the pay table?
+
+        // TODO: After calculating winning symbols, use event system to notify SlotMachine that spinning state is over by checking if we are still tweening.
     }
 }

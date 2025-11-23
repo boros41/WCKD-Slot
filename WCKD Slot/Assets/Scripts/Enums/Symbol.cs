@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public enum Symbols
+public enum Symbol
 {
     W,
     C,
