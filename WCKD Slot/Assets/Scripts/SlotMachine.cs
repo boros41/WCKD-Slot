@@ -12,6 +12,9 @@ public class SlotMachine : MonoBehaviour
     private Reel _reel3;
     private Reel _reel4;
     public static State State;
+    public static WinMode WinMode = WinMode.NormalPlay;
+
+    [SerializeField] private float _spinDuration = 2.5f;
 
     private void Start()
     {
@@ -60,8 +63,26 @@ public class SlotMachine : MonoBehaviour
     private List<Dictionary<int, Symbol>> DetermineSymbols()
     {
         List<Reel> reels = new List<Reel>() { _reel1, _reel2, _reel3, _reel4 };
-        List<List<int>> stopIndices = new List<List<int>>() { _reel1.StopIndices(), _reel2.StopIndices(), _reel3.StopIndices(), _reel4.StopIndices() };
-        List<Dictionary<int, Symbol>> determinedSymbols = new List<Dictionary<int, Symbol>>(4) {new(4), new(4) , new(4) , new(4) };
+        List<Dictionary<int, Symbol>> determinedSymbols = new List<Dictionary<int, Symbol>>(4) { new(4), new(4), new(4), new(4) };
+        List<List<int>> stopIndices = new List<List<int>>(4);
+
+        switch (WinMode)
+        {
+            case WinMode.NormalPlay:
+                stopIndices = new List<List<int>>()
+                {
+                    _reel1.StopIndices(), _reel2.StopIndices(), _reel3.StopIndices(), _reel4.StopIndices()
+                };
+                break;
+            case WinMode.MaxWin: // W,C,K,D symbols
+                stopIndices = new List<List<int>>()
+                {
+                    _reel1.StopIndices(Symbol.W), _reel2.StopIndices(Symbol.C), _reel3.StopIndices(Symbol.K), _reel4.StopIndices(Symbol.D)
+                };
+                break;
+            case WinMode.Bonus:
+                throw new NotImplementedException("Bonus not implemented yet");
+        }
 
         // store determined symbols of each reel with their index (indexed from Reel.Strip list)
         for (int reel = 0; reel < determinedSymbols.Count; reel++)
@@ -227,21 +248,51 @@ public class SlotMachine : MonoBehaviour
     {
         float delay = 0.1f;
 
-        _reel1.Spin(GetSymbolBackgrounds(1));
+        _reel1.Spin(GetSymbolBackgrounds(1), _spinDuration, RemoveSymbolsOnComplete());
+
+        yield return new WaitForSeconds(delay);
+        
+        // TODO: If reel 1 landed the frog bonus spin, slow down subsequent reels for a dramatic effect. Do the same for WCKD. 
+
+        _reel2.Spin(GetSymbolBackgrounds(2), _spinDuration, RemoveSymbolsOnComplete());
 
         yield return new WaitForSeconds(delay);
 
-        _reel2.Spin(GetSymbolBackgrounds(2));
+        _reel3.Spin(GetSymbolBackgrounds(3), _spinDuration, RemoveSymbolsOnComplete());
 
         yield return new WaitForSeconds(delay);
 
-        _reel3.Spin(GetSymbolBackgrounds(3));
+        _reel4.Spin(GetSymbolBackgrounds(4), _spinDuration, RemoveSymbolsOnComplete(isLastReel: true));
 
-        yield return new WaitForSeconds(delay);
 
-        _reel4.Spin(GetSymbolBackgrounds(4));
+    }
 
-        yield return new WaitForSeconds(delay);
+    private Action<List<GameObject>> RemoveSymbolsOnComplete(bool isLastReel = false)
+    {
+        return (symbolBackgrounds) =>
+        {
+            // TODO: Once old symbols are out of view, delete them.
+            symbolBackgrounds.RemoveAll(symbolBg =>
+            {
+                bool shouldRemove = Mathf.Approximately(symbolBg.transform.localPosition.y, Reel.Row1LowerY)
+                                    || Mathf.Approximately(symbolBg.transform.localPosition.y, Reel.Row2LowerY)
+                                    || Mathf.Approximately(symbolBg.transform.localPosition.y, Reel.Row3LowerY)
+                                    || Mathf.Approximately(symbolBg.transform.localPosition.y, Reel.Row4LowerY);
+
+                if (shouldRemove)
+                {
+                    Destroy(symbolBg);
+                }
+
+                return shouldRemove;
+            });
+
+            if (isLastReel)
+            {
+                State = State.Ready;
+                print($"Current state: {State}");
+            }
+        };
     }
 
     private List<GameObject> GetSymbolBackgrounds(int reel)
@@ -274,4 +325,12 @@ public class SlotMachine : MonoBehaviour
 
         return reelSymbolBackgrounds;
     }
+
+    #region Spawn Explicit Symbols
+
+    // TODO: Add a UI menu that allows symbols to be spawned explicitly for testing. I.e., a max win button that will spawn the W,C,K,D symbols.
+
+
+
+    #endregion
 }

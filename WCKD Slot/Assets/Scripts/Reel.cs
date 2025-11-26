@@ -1,8 +1,12 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.WSA;
+using static UnityEngine.GameObject;
+using Object = UnityEngine.Object;
+using Random = UnityEngine.Random;
 
 public class Reel
 {
@@ -68,6 +72,31 @@ public class Reel
         return _stopIndices;
     }
 
+    // TODO: Maybe use delegates to reduce duplication?
+    public List<int> StopIndices(Symbol symbol)
+    {
+        _stopIndices.Clear();
+
+        int stopIndex = Strip.IndexOf(symbol);
+        _stopIndices.Add(stopIndex);
+
+        int nextIndex = stopIndex + 1; // assume we are not at end of collection
+        for (int i = 0; i < 3; i++) // there are 4 visible rows so we need 3 more
+        {
+
+            if (nextIndex == Strip.Count) // end of collection
+            {
+                nextIndex = 0; // start from beginning
+            }
+
+            _stopIndices.Add(nextIndex);
+
+            nextIndex++;
+        }
+
+        return _stopIndices;
+    }
+
     public void PrintSymbols(int reel)
     {
         string numberedSymbols = string.Empty;
@@ -82,9 +111,9 @@ public class Reel
     }
 
     // moving these symbol backgrounds will also move the symbols since they are children
-    public void Spin(List<GameObject> symbolBackgrounds)
+    // LeanTween package: https://assetstore.unity.com/packages/tools/animation/leantween-3595?srsltid=AfmBOop2h1UBbe3iDz6dv3jrd3SEZn__c-y-fd95XVgmqjvj3aloBEVS
+    public void Spin(List<GameObject> symbolBackgrounds, float spinDuration, Action<List<GameObject>> onComplete) // TODO: implement turbo spin button
     {
-        float spinDuration = 2.5f;
 
         // move the upper symbols into view of the slot machine
         LeanTween.moveY(symbolBackgrounds[4], Row1Y, spinDuration).setEase(LeanTweenType.easeOutBack);
@@ -96,10 +125,12 @@ public class Reel
         LeanTween.moveY(symbolBackgrounds[0], Row1LowerY, spinDuration).setEase(LeanTweenType.easeOutBack);
         LeanTween.moveY(symbolBackgrounds[1], Row2LowerY, spinDuration).setEase(LeanTweenType.easeOutBack);
         LeanTween.moveY(symbolBackgrounds[2], Row3LowerY, spinDuration).setEase(LeanTweenType.easeOutBack);
-        LeanTween.moveY(symbolBackgrounds[3], Row4LowerY, spinDuration).setEase(LeanTweenType.easeOutBack);
+        LeanTween.moveY(symbolBackgrounds[3], Row4LowerY, spinDuration).setEase(LeanTweenType.easeOutBack).setOnComplete(() => onComplete?.Invoke(symbolBackgrounds));
 
+        
 
-        // TODO: Once old symbols are out of view, delete them.
+        
+
         // TODO: Implement sprite mask to prevent of view symbols from being shown. 
         // TODO: Determine any winning symbols. Did I even finish the pay table?
 
