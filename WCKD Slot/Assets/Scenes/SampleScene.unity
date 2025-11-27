@@ -609,8 +609,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1937466991}
-        m_TargetAssemblyTypeName: SlotMachine, Assembly-CSharp
+      - m_Target: {fileID: 2067942618}
+        m_TargetAssemblyTypeName: WinManager, Assembly-CSharp
         m_MethodName: OnSpinClick
         m_Mode: 1
         m_Arguments:
@@ -2532,7 +2532,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: $ 999
+  m_text: $ 1,000
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -2575,7 +2575,7 @@ MonoBehaviour:
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
   m_charWidthMaxAdj: 0
-  m_TextWrappingMode: 1
+  m_TextWrappingMode: 0
   m_wordWrappingRatios: 0.4
   m_overflowMode: 0
   m_linkedTextComponent: {fileID: 0}
@@ -3939,7 +3939,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 333925b6abdffea49a0a085076379ab4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WinManager
+  _slotMachine: {fileID: 1937466991}
   _playAmountTMP: {fileID: 652583071}
+  _balanceTMP: {fileID: 984906647}
 --- !u!4 &2067942619
 Transform:
   m_ObjectHideFlags: 0

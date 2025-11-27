@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using JetBrains.Annotations;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -14,6 +15,8 @@ public class SlotMachine : MonoBehaviour
     private Reel _reel4;
     public static State State;
     public static WinMode WinMode = WinMode.NormalPlay;
+
+    [CanBeNull] public event Action<float> MaxWinEvent;
 
     [SerializeField] private float _spinDuration = 2.5f;
 
@@ -116,7 +119,7 @@ public class SlotMachine : MonoBehaviour
     }
 
     // this instantiates the symbols when the player first loads the game
-    private void PopulateReels(float row1Y, float row2Y, float row3Y, float row4Y)
+    public void PopulateReels(float row1Y, float row2Y, float row3Y, float row4Y)
     {
         List<Dictionary<int, Symbol>> determinedSymbols = DetermineSymbols();
 
@@ -240,26 +243,8 @@ public class SlotMachine : MonoBehaviour
     
     #endregion
 
-    public void OnSpinClick()
-    {
-        if (State != State.Ready)
-        {
-            print($"Cannot spin while state is \"{State}\"");
-            return;
-        }
 
-        // each symbol has a y difference of ~1.0673333 between each other
-        PopulateReels(Reel.Row1UpperY , Reel.Row2UpperY , Reel.Row3UpperY , Reel.Row4UpperY);
-
-        State = State.Spinning;
-        // TODO: play spin sound effect
-        print($"Spin button clicked! New state: {State}");
-
-
-        StartCoroutine(SpinReels());
-    }
-
-    private IEnumerator SpinReels()
+    public IEnumerator SpinReels()
     {
         float delay = 0.1f;
 
@@ -298,6 +283,8 @@ public class SlotMachine : MonoBehaviour
         if (IsMaxWin(allSymbols))
         {
             print("Awarding max win amount!");
+
+            MaxWinEvent?.Invoke(5000);
         }
 
         State = State.Ready;
