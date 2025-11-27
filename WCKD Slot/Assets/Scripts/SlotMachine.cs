@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -58,6 +59,14 @@ public class SlotMachine : MonoBehaviour
         State = State.Ready;
     }
 
+    private void Update()
+    {
+        if (State == State.CalculatingWins)
+        {
+            CalculateWins();
+        }
+    }
+
     #region OnGameLaunch
 
     private List<Dictionary<int, Symbol>> DetermineSymbols()
@@ -80,8 +89,14 @@ public class SlotMachine : MonoBehaviour
                     _reel1.StopIndices(Symbol.W), _reel2.StopIndices(Symbol.C), _reel3.StopIndices(Symbol.K), _reel4.StopIndices(Symbol.D)
                 };
                 break;
-            case WinMode.Bonus:
-                throw new NotImplementedException("Bonus not implemented yet");
+            case WinMode.Bonus: // three frogs
+                stopIndices = new List<List<int>>()
+                {
+                    _reel1.StopIndices(Symbol.Frog), _reel2.StopIndices(Symbol.Frog), _reel3.StopIndices(Symbol.Frog), _reel4.StopIndices()
+                };
+                break;
+            case WinMode.SuperBonus: // four frogs
+                throw new NotImplementedException("Super bonus feature not implemented");
         }
 
         // store determined symbols of each reel with their index (indexed from Reel.Strip list)
@@ -251,8 +266,6 @@ public class SlotMachine : MonoBehaviour
         _reel1.Spin(GetSymbolBackgrounds(1), _spinDuration, RemoveSymbolsOnComplete());
 
         yield return new WaitForSeconds(delay);
-        
-        // TODO: If reel 1 landed the frog bonus spin, slow down subsequent reels for a dramatic effect. Do the same for WCKD. 
 
         _reel2.Spin(GetSymbolBackgrounds(2), _spinDuration, RemoveSymbolsOnComplete());
 
@@ -263,15 +276,59 @@ public class SlotMachine : MonoBehaviour
         yield return new WaitForSeconds(delay);
 
         _reel4.Spin(GetSymbolBackgrounds(4), _spinDuration, RemoveSymbolsOnComplete(isLastReel: true));
+    }
 
+    private void CalculateWins()
+    {
+        List<GameObject> reel1Symbols = GetChildGameObjects(GetSymbolBackgrounds(reel:1));
+        List<GameObject> reel2Symbols = GetChildGameObjects(GetSymbolBackgrounds(reel: 2));
+        List<GameObject> reel3Symbols = GetChildGameObjects(GetSymbolBackgrounds(reel: 3));
+        List<GameObject> reel4Symbols = GetChildGameObjects(GetSymbolBackgrounds(reel: 4));
 
+        List<GameObject> allSymbols = new List<GameObject>(reel1Symbols.Count +
+                                                           reel2Symbols.Count +
+                                                           reel3Symbols.Count +
+                                                           reel4Symbols.Count);
+
+        allSymbols.AddRange(reel1Symbols);
+        allSymbols.AddRange(reel2Symbols);
+        allSymbols.AddRange(reel3Symbols);
+        allSymbols.AddRange(reel4Symbols);
+
+        if (IsMaxWin(allSymbols))
+        {
+            print("Awarding max win amount!");
+        }
+
+        State = State.Ready;
+    }
+
+    private bool IsMaxWin(List<GameObject> allSymbols)
+    {
+        int maxWinSymbolsCount = 0;
+
+        foreach (GameObject currentSymbol in allSymbols)
+        {
+            if (currentSymbol.name == "W-symbol(Clone)") maxWinSymbolsCount++;
+            if (currentSymbol.name == "C-symbol(Clone)") maxWinSymbolsCount++;
+            if (currentSymbol.name == "K-symbol(Clone)") maxWinSymbolsCount++;
+            if (currentSymbol.name == "D-symbol(Clone)") maxWinSymbolsCount++;
+        }
+
+        if (maxWinSymbolsCount == 4)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     private Action<List<GameObject>> RemoveSymbolsOnComplete(bool isLastReel = false)
     {
         return (symbolBackgrounds) =>
         {
-            // TODO: Once old symbols are out of view, delete them.
             symbolBackgrounds.RemoveAll(symbolBg =>
             {
                 bool shouldRemove = Mathf.Approximately(symbolBg.transform.localPosition.y, Reel.Row1LowerY)
@@ -289,7 +346,7 @@ public class SlotMachine : MonoBehaviour
 
             if (isLastReel)
             {
-                State = State.Ready;
+                State = State.CalculatingWins;
                 print($"Current state: {State}");
             }
         };
@@ -324,6 +381,25 @@ public class SlotMachine : MonoBehaviour
         }
 
         return reelSymbolBackgrounds;
+    }
+
+    private List<GameObject> GetChildGameObjects(List<GameObject> parents)
+    {
+        if (!parents.Any()) throw new ArgumentException($"Parent list cannot be empty");
+
+        List<GameObject> children = new List<GameObject>();
+
+        foreach (GameObject parent in parents)
+        {
+            foreach (Transform childTransform in parent.transform)
+            {
+                GameObject child = childTransform.gameObject;
+
+                children.Add(child);
+            }
+        }
+
+        return children;
     }
 
     #region Spawn Explicit Symbols

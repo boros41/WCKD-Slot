@@ -125,7 +125,10 @@ public class Reel
         LeanTween.moveY(symbolBackgrounds[0], Row1LowerY, spinDuration).setEase(LeanTweenType.easeOutBack);
         LeanTween.moveY(symbolBackgrounds[1], Row2LowerY, spinDuration).setEase(LeanTweenType.easeOutBack);
         LeanTween.moveY(symbolBackgrounds[2], Row3LowerY, spinDuration).setEase(LeanTweenType.easeOutBack);
-        LeanTween.moveY(symbolBackgrounds[3], Row4LowerY, spinDuration).setEase(LeanTweenType.easeOutBack).setOnComplete(() => onComplete?.Invoke(symbolBackgrounds));
+
+        LeanTween.moveY(symbolBackgrounds[3], Row4LowerY, spinDuration)
+                 .setEase(LeanTweenType.easeOutBack)
+                 .setOnComplete(() => onComplete?.Invoke(symbolBackgrounds));
 
         
 
