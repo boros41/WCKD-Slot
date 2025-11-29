@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using Assets.Scripts;
 using JetBrains.Annotations;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -15,8 +16,6 @@ public class SlotMachine : MonoBehaviour
     private Reel _reel4;
     public static State State;
     public static WinMode WinMode = WinMode.NormalPlay;
-
-    [CanBeNull] public event Action<float> MaxWinEvent;
 
     [SerializeField] private float _spinDuration = 2.5f;
 
@@ -62,14 +61,6 @@ public class SlotMachine : MonoBehaviour
         State = State.Ready;
     }
 
-    private void Update()
-    {
-        if (State == State.CalculatingWins)
-        {
-            CalculateWins();
-        }
-    }
-
     #region OnGameLaunch
 
     private List<Dictionary<int, Symbol>> DetermineSymbols()
@@ -99,7 +90,11 @@ public class SlotMachine : MonoBehaviour
                 };
                 break;
             case WinMode.SuperBonus: // four frogs
-                throw new NotImplementedException("Super bonus feature not implemented");
+                stopIndices = new List<List<int>>()
+                {
+                    _reel1.StopIndices(Symbol.Frog), _reel2.StopIndices(Symbol.Frog), _reel3.StopIndices(Symbol.Frog), _reel4.StopIndices(Symbol.Frog)
+                };
+                break;
         }
 
         // store determined symbols of each reel with their index (indexed from Reel.Strip list)
@@ -260,70 +255,36 @@ public class SlotMachine : MonoBehaviour
     public IEnumerator SpinReels()
     {
         float delay = 0.1f;
+        bool spinFinished = false;
 
-        _reel1.Spin(GetSymbolBackgrounds(1), _spinDuration, RemoveSymbolsOnComplete());
+        SlotMachine.State = State.Spinning;
+        print($"Starting spin! New state: {SlotMachine.State}");
+
+        // each symbol has a y difference of ~1.0673333 between each other
+        PopulateReels(Reel.Row1UpperY, Reel.Row2UpperY, Reel.Row3UpperY, Reel.Row4UpperY);
+
+        _reel1.Spin(SlotUtils.GetSymbolBackgrounds(reel:1), _spinDuration, RemoveSymbolsOnComplete());
 
         yield return new WaitForSeconds(delay);
 
-        _reel2.Spin(GetSymbolBackgrounds(2), _spinDuration, RemoveSymbolsOnComplete());
+        _reel2.Spin(SlotUtils.GetSymbolBackgrounds(reel:2), _spinDuration, RemoveSymbolsOnComplete());
 
         yield return new WaitForSeconds(delay);
 
-        _reel3.Spin(GetSymbolBackgrounds(3), _spinDuration, RemoveSymbolsOnComplete());
+        _reel3.Spin(SlotUtils.GetSymbolBackgrounds(reel:3), _spinDuration, RemoveSymbolsOnComplete());
 
         yield return new WaitForSeconds(delay);
 
-        _reel4.Spin(GetSymbolBackgrounds(4), _spinDuration, RemoveSymbolsOnComplete(isLastReel: true));
+        _reel4.Spin(SlotUtils.GetSymbolBackgrounds(reel:4), _spinDuration, symbolBackgrounds =>
+        {
+            RemoveSymbolsOnComplete(true)(symbolBackgrounds);
+            spinFinished = true;
+        });
+
+        yield return new WaitUntil(() => spinFinished);
     }
 
-    private void CalculateWins()
-    {
-        List<GameObject> reel1Symbols = GetChildGameObjects(GetSymbolBackgrounds(reel:1));
-        List<GameObject> reel2Symbols = GetChildGameObjects(GetSymbolBackgrounds(reel: 2));
-        List<GameObject> reel3Symbols = GetChildGameObjects(GetSymbolBackgrounds(reel: 3));
-        List<GameObject> reel4Symbols = GetChildGameObjects(GetSymbolBackgrounds(reel: 4));
-
-        List<GameObject> allSymbols = new List<GameObject>(reel1Symbols.Count +
-                                                           reel2Symbols.Count +
-                                                           reel3Symbols.Count +
-                                                           reel4Symbols.Count);
-
-        allSymbols.AddRange(reel1Symbols);
-        allSymbols.AddRange(reel2Symbols);
-        allSymbols.AddRange(reel3Symbols);
-        allSymbols.AddRange(reel4Symbols);
-
-        if (IsMaxWin(allSymbols))
-        {
-            print("Awarding max win amount!");
-
-            MaxWinEvent?.Invoke(5000);
-        }
-
-        State = State.Ready;
-    }
-
-    private bool IsMaxWin(List<GameObject> allSymbols)
-    {
-        int maxWinSymbolsCount = 0;
-
-        foreach (GameObject currentSymbol in allSymbols)
-        {
-            if (currentSymbol.name == "W-symbol(Clone)") maxWinSymbolsCount++;
-            if (currentSymbol.name == "C-symbol(Clone)") maxWinSymbolsCount++;
-            if (currentSymbol.name == "K-symbol(Clone)") maxWinSymbolsCount++;
-            if (currentSymbol.name == "D-symbol(Clone)") maxWinSymbolsCount++;
-        }
-
-        if (maxWinSymbolsCount == 4)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
+    
 
     private Action<List<GameObject>> RemoveSymbolsOnComplete(bool isLastReel = false)
     {
@@ -352,55 +313,9 @@ public class SlotMachine : MonoBehaviour
         };
     }
 
-    private List<GameObject> GetSymbolBackgrounds(int reel)
-    {
-        GameObject parent;
-        List<GameObject> reelSymbolBackgrounds = new List<GameObject>();
+    
 
-        switch (reel)
-        {
-            case 1:
-                parent = GameObject.FindGameObjectWithTag(TagManager.Reel1);
-                break;
-            case 2:
-                parent = GameObject.FindGameObjectWithTag(TagManager.Reel2);
-                break;
-            case 3:
-                parent = GameObject.FindGameObjectWithTag(TagManager.Reel3);
-                break;
-            case 4:
-                parent = GameObject.FindGameObjectWithTag(TagManager.Reel4);
-                break;
-            default:
-                throw new ArgumentException("Invalid reel number specified");
-        }
-
-        foreach (Transform symbolBackground in parent.transform)
-        {
-            reelSymbolBackgrounds.Add(symbolBackground.gameObject);
-        }
-
-        return reelSymbolBackgrounds;
-    }
-
-    private List<GameObject> GetChildGameObjects(List<GameObject> parents)
-    {
-        if (!parents.Any()) throw new ArgumentException($"Parent list cannot be empty");
-
-        List<GameObject> children = new List<GameObject>();
-
-        foreach (GameObject parent in parents)
-        {
-            foreach (Transform childTransform in parent.transform)
-            {
-                GameObject child = childTransform.gameObject;
-
-                children.Add(child);
-            }
-        }
-
-        return children;
-    }
+    
 
     #region Spawn Explicit Symbols
 

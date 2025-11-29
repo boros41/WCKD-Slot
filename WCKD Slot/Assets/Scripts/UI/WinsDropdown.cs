@@ -21,6 +21,9 @@ public class WinsDropdown : MonoBehaviour
             case "Max Win":
                 SlotMachine.WinMode = WinMode.MaxWin;
                 break;
+            case "Super Bonus":
+                SlotMachine.WinMode = WinMode.SuperBonus;
+                break;
             case "Bonus":
                 SlotMachine.WinMode = WinMode.Bonus;
                 break;
