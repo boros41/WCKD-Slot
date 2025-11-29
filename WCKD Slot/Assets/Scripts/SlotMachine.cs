@@ -5,11 +5,13 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using Assets.Scripts;
 using JetBrains.Annotations;
+using NUnit.Framework;
 using Unity.VisualScripting;
 using UnityEngine;
 
 public class SlotMachine : MonoBehaviour
 {
+    [SerializeField] private WinManager _winManager; 
     private Reel _reel1;
     private Reel _reel2;
     private Reel _reel3;
@@ -93,6 +95,144 @@ public class SlotMachine : MonoBehaviour
                 stopIndices = new List<List<int>>()
                 {
                     _reel1.StopIndices(Symbol.Frog), _reel2.StopIndices(Symbol.Frog), _reel3.StopIndices(Symbol.Frog), _reel4.StopIndices(Symbol.Frog)
+                };
+                break;
+            case WinMode.FourLeafClover:
+                stopIndices = new List<List<int>>()
+                {
+                    _reel1.StopIndices(Symbol.Clover), _reel2.StopIndices(Symbol.Clover), _reel3.StopIndices(Symbol.Clover), _reel4.StopIndices(Symbol.Clover)
+                };
+                break;
+            case WinMode.FourSkulls:
+                stopIndices = new List<List<int>>()
+                {
+                    _reel1.StopIndices(Symbol.Skull), _reel2.StopIndices(Symbol.Skull), _reel3.StopIndices(Symbol.Skull), _reel4.StopIndices(Symbol.Skull)
+                };
+                break;
+            case WinMode.ThreeSkulls:
+                stopIndices = new List<List<int>>()
+                {
+                    _reel1.StopIndices(Symbol.Skull), _reel2.StopIndices(Symbol.Skull), _reel3.StopIndices(Symbol.Skull), _reel4.StopIndices()
+                };
+                break;
+            case WinMode.FourCrocodiles:
+                stopIndices = new List<List<int>>()
+                {
+                    _reel1.StopIndices(Symbol.Crocodile), _reel2.StopIndices(Symbol.Crocodile), _reel3.StopIndices(Symbol.Crocodile), _reel4.StopIndices(Symbol.Crocodile)
+                };
+                break;
+            case WinMode.ThreeCrocodiles:
+                stopIndices = new List<List<int>>()
+                {
+                    _reel1.StopIndices(Symbol.Crocodile), _reel2.StopIndices(Symbol.Crocodile), _reel3.StopIndices(Symbol.Crocodile), _reel4.StopIndices()
+                };
+                break;
+            case WinMode.FourRavens:
+                stopIndices = new List<List<int>>()
+                {
+                    _reel1.StopIndices(Symbol.Raven), _reel2.StopIndices(Symbol.Raven), _reel3.StopIndices(Symbol.Raven), _reel4.StopIndices(Symbol.Raven)
+                };
+                break;
+            case WinMode.ThreeRavens:
+                stopIndices = new List<List<int>>()
+                {
+                    _reel1.StopIndices(Symbol.Raven), _reel2.StopIndices(Symbol.Raven), _reel3.StopIndices(Symbol.Raven), _reel4.StopIndices()
+                };
+                break;
+            case WinMode.FourOwls:
+                stopIndices = new List<List<int>>()
+                {
+                    _reel1.StopIndices(Symbol.Owl), _reel2.StopIndices(Symbol.Owl), _reel3.StopIndices(Symbol.Owl), _reel4.StopIndices(Symbol.Owl)
+                };
+                break;
+            case WinMode.ThreeOwls:
+                stopIndices = new List<List<int>>()
+                {
+                    _reel1.StopIndices(Symbol.Owl), _reel2.StopIndices(Symbol.Owl), _reel3.StopIndices(Symbol.Owl), _reel4.StopIndices()
+                };
+                break;
+            case WinMode.FourBats:
+                stopIndices = new List<List<int>>()
+                {
+                    _reel1.StopIndices(Symbol.Bat), _reel2.StopIndices(Symbol.Bat), _reel3.StopIndices(Symbol.Bat), _reel4.StopIndices(Symbol.Bat)
+                };
+                break;
+            case WinMode.ThreeBats:
+                stopIndices = new List<List<int>>()
+                {
+                    _reel1.StopIndices(Symbol.Bat), _reel2.StopIndices(Symbol.Bat), _reel3.StopIndices(Symbol.Bat), _reel4.StopIndices()
+                };
+                break;
+            case WinMode.FourMoths:
+                stopIndices = new List<List<int>>()
+                {
+                    _reel1.StopIndices(Symbol.Moth), _reel2.StopIndices(Symbol.Moth), _reel3.StopIndices(Symbol.Moth), _reel4.StopIndices(Symbol.Moth)
+                };
+                break;
+            case WinMode.ThreeMoths:
+                stopIndices = new List<List<int>>()
+                {
+                    _reel1.StopIndices(Symbol.Moth), _reel2.StopIndices(Symbol.Moth), _reel3.StopIndices(Symbol.Moth), _reel4.StopIndices()
+                };
+                break;
+            case WinMode.FourSpiders:
+                stopIndices = new List<List<int>>()
+                {
+                    _reel1.StopIndices(Symbol.Spider), _reel2.StopIndices(Symbol.Spider), _reel3.StopIndices(Symbol.Spider), _reel4.StopIndices(Symbol.Spider)
+                };
+                break;
+            case WinMode.ThreeSpiders:
+                stopIndices = new List<List<int>>()
+                {
+                    _reel1.StopIndices(Symbol.Spider), _reel2.StopIndices(Symbol.Spider), _reel3.StopIndices(Symbol.Spider), _reel4.StopIndices()
+                };
+                break;
+            case WinMode.FourRoses:
+                stopIndices = new List<List<int>>()
+                {
+                    _reel1.StopIndices(Symbol.Rose), _reel2.StopIndices(Symbol.Rose), _reel3.StopIndices(Symbol.Rose), _reel4.StopIndices(Symbol.Rose)
+                };
+                break;
+            case WinMode.ThreeRoses:
+                stopIndices = new List<List<int>>()
+                {
+                    _reel1.StopIndices(Symbol.Rose), _reel2.StopIndices(Symbol.Rose), _reel3.StopIndices(Symbol.Rose), _reel4.StopIndices()
+                };
+                break;
+            case WinMode.FourLilyPads:
+                stopIndices = new List<List<int>>()
+                {
+                    _reel1.StopIndices(Symbol.LilyPad), _reel2.StopIndices(Symbol.LilyPad), _reel3.StopIndices(Symbol.LilyPad), _reel4.StopIndices(Symbol.LilyPad)
+                };
+                break;
+            case WinMode.ThreeLilyPads:
+                stopIndices = new List<List<int>>()
+                {
+                    _reel1.StopIndices(Symbol.LilyPad), _reel2.StopIndices(Symbol.LilyPad), _reel3.StopIndices(Symbol.LilyPad), _reel4.StopIndices()
+                };
+                break;
+            case WinMode.FourFlowers:
+                stopIndices = new List<List<int>>()
+                {
+                    _reel1.StopIndices(Symbol.Flower), _reel2.StopIndices(Symbol.Flower), _reel3.StopIndices(Symbol.Flower), _reel4.StopIndices(Symbol.Flower)
+                };
+                break;
+            case WinMode.ThreeFlowers:
+                stopIndices = new List<List<int>>()
+                {
+                    _reel1.StopIndices(Symbol.Flower), _reel2.StopIndices(Symbol.Flower), _reel3.StopIndices(Symbol.Flower), _reel4.StopIndices()
+                };
+                break;
+            case WinMode.FourDeadTrees:
+                stopIndices = new List<List<int>>()
+                {
+                    _reel1.StopIndices(Symbol.DeadTree), _reel2.StopIndices(Symbol.DeadTree), _reel3.StopIndices(Symbol.DeadTree), _reel4.StopIndices(Symbol.DeadTree)
+                };
+                break;
+            case WinMode.ThreeDeadTrees:
+                stopIndices = new List<List<int>>()
+                {
+                    _reel1.StopIndices(Symbol.DeadTree), _reel2.StopIndices(Symbol.DeadTree), _reel3.StopIndices(Symbol.DeadTree), _reel4.StopIndices()
                 };
                 break;
         }
@@ -254,68 +394,58 @@ public class SlotMachine : MonoBehaviour
 
     public IEnumerator SpinReels()
     {
-        float delay = 0.1f;
-        bool spinFinished = false;
-
         SlotMachine.State = State.Spinning;
         print($"Starting spin! New state: {SlotMachine.State}");
 
         // each symbol has a y difference of ~1.0673333 between each other
         PopulateReels(Reel.Row1UpperY, Reel.Row2UpperY, Reel.Row3UpperY, Reel.Row4UpperY);
 
-        _reel1.Spin(SlotUtils.GetSymbolBackgrounds(reel:1), _spinDuration, RemoveSymbolsOnComplete());
+        float delay = 0.1f;
+        bool spinFinished = false;
+        List<GameObject> reel1SymbolBgs = SlotUtils.GetSymbolBackgrounds(reel: 1);
+        List<GameObject> reel2SymbolBgs = SlotUtils.GetSymbolBackgrounds(reel: 2);
+        List<GameObject> reel3SymbolBgs = SlotUtils.GetSymbolBackgrounds(reel: 3);
+        List<GameObject> reel4SymbolBgs = SlotUtils.GetSymbolBackgrounds(reel: 4);
+
+        _reel1.Spin(reel1SymbolBgs, _spinDuration, RemoveBackgroundSymbolsOnComplete(1));
 
         yield return new WaitForSeconds(delay);
 
-        _reel2.Spin(SlotUtils.GetSymbolBackgrounds(reel:2), _spinDuration, RemoveSymbolsOnComplete());
+        _reel2.Spin(reel2SymbolBgs, _spinDuration, RemoveBackgroundSymbolsOnComplete(2));
 
         yield return new WaitForSeconds(delay);
 
-        _reel3.Spin(SlotUtils.GetSymbolBackgrounds(reel:3), _spinDuration, RemoveSymbolsOnComplete());
+        _reel3.Spin(reel3SymbolBgs, _spinDuration, RemoveBackgroundSymbolsOnComplete(3));
 
         yield return new WaitForSeconds(delay);
 
-        _reel4.Spin(SlotUtils.GetSymbolBackgrounds(reel:4), _spinDuration, symbolBackgrounds =>
+        _reel4.Spin(reel4SymbolBgs, _spinDuration, symbolBackgrounds =>
         {
-            RemoveSymbolsOnComplete(true)(symbolBackgrounds);
+            RemoveBackgroundSymbolsOnComplete(4)(symbolBackgrounds);
             spinFinished = true;
         });
 
         yield return new WaitUntil(() => spinFinished);
+
+        State = State.CalculatingWins;
+        print($"Current state: {State}");
+
+        yield return _winManager.CalculateWins();
     }
 
-    
 
-    private Action<List<GameObject>> RemoveSymbolsOnComplete(bool isLastReel = false)
+
+    private Action<List<GameObject>> RemoveBackgroundSymbolsOnComplete(int reel)
     {
         return (symbolBackgrounds) =>
         {
-            symbolBackgrounds.RemoveAll(symbolBg =>
+            foreach (GameObject symbolBackground in symbolBackgrounds.GetRange(0, 4))
             {
-                bool shouldRemove = Mathf.Approximately(symbolBg.transform.localPosition.y, Reel.Row1LowerY)
-                                    || Mathf.Approximately(symbolBg.transform.localPosition.y, Reel.Row2LowerY)
-                                    || Mathf.Approximately(symbolBg.transform.localPosition.y, Reel.Row3LowerY)
-                                    || Mathf.Approximately(symbolBg.transform.localPosition.y, Reel.Row4LowerY);
-
-                if (shouldRemove)
-                {
-                    Destroy(symbolBg);
-                }
-
-                return shouldRemove;
-            });
-
-            if (isLastReel)
-            {
-                State = State.CalculatingWins;
-                print($"Current state: {State}");
+                symbolBackgrounds.Remove(symbolBackground);
+                Destroy(symbolBackground);
             }
         };
     }
-
-    
-
-    
 
     #region Spawn Explicit Symbols
 

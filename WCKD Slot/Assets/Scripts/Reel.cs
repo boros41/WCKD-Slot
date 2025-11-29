@@ -112,7 +112,7 @@ public class Reel
 
     // moving these symbol backgrounds will also move the symbols since they are children
     // LeanTween package: https://assetstore.unity.com/packages/tools/animation/leantween-3595?srsltid=AfmBOop2h1UBbe3iDz6dv3jrd3SEZn__c-y-fd95XVgmqjvj3aloBEVS
-    public void Spin(List<GameObject> symbolBackgrounds, float spinDuration, Action<List<GameObject>> onComplete) // TODO: implement turbo spin button
+    public void Spin(List<GameObject> symbolBackgrounds, float spinDuration, Action<List<GameObject>> onComplete = null) // TODO: implement turbo spin button
     {
 
         // move the upper symbols into view of the slot machine
@@ -128,15 +128,12 @@ public class Reel
 
         LeanTween.moveY(symbolBackgrounds[3], Row4LowerY, spinDuration)
                  .setEase(LeanTweenType.easeOutBack)
-                 .setOnComplete(() => onComplete?.Invoke(symbolBackgrounds));
+                 .setOnComplete(() =>
+                 {
+                     onComplete?.Invoke(symbolBackgrounds);
 
-        
-
-        
+                 });
 
         // TODO: Implement sprite mask to prevent of view symbols from being shown. 
-        // TODO: Determine any winning symbols. Did I even finish the pay table?
-
-        // TODO: After calculating winning symbols, use event system to notify SlotMachine that spinning state is over by checking if we are still tweening.
     }
 }

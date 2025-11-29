@@ -1,7 +1,8 @@
+using Assets.Scripts;
 using System.Collections;
 using System.Collections.Generic;
-using Assets.Scripts;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -21,10 +22,10 @@ public class WinManager : MonoBehaviour
 
     private void Update()
     {
-        if (SlotMachine.State == State.CalculatingWins)
+        /*if (SlotMachine.State == State.CalculatingWins)
         {
             StartCoroutine(CalculateWins());
-        }
+        }*/
     }
 
     public void OnSpinClick()
@@ -44,6 +45,7 @@ public class WinManager : MonoBehaviour
             return;
         }
 
+        _winAmountTMP.SetText("$0.00");
         _balance -= _playAmount;
         _balanceTMP.SetText($"{_balance:C}");
 
@@ -53,7 +55,10 @@ public class WinManager : MonoBehaviour
     public void UpdateBalance(float multiplier)
     {
         float winAmount = _playAmount * multiplier;
-        _winAmountTMP.SetText($"{winAmount:C}");
+        float oldWinAmount = float.Parse(_winAmountTMP.text[1..]) ; // in case there are multiple wins at once
+        float totalWinAmount = winAmount + oldWinAmount;
+
+        _winAmountTMP.SetText($"{totalWinAmount:C}");
 
         _balance += winAmount;
         _balanceTMP.SetText($"{_balance:C}");
@@ -105,7 +110,7 @@ public class WinManager : MonoBehaviour
         _playAmountTMP.SetText($"{_playAmount:C}");
     }
 
-    private IEnumerator CalculateWins()
+    public IEnumerator CalculateWins()
     {
         List<GameObject> reel1Symbols = SlotUtils.GetChildGameObjects(SlotUtils.GetSymbolBackgrounds(reel: 1));
         List<GameObject> reel2Symbols = SlotUtils.GetChildGameObjects(SlotUtils.GetSymbolBackgrounds(reel: 2));
@@ -122,13 +127,16 @@ public class WinManager : MonoBehaviour
         allSymbols.AddRange(reel3Symbols);
         allSymbols.AddRange(reel4Symbols);
 
+        #region Determine Win
+
+        // TODO: For each of these, try to tween the scale of the symbols to highlight the winning symbols for dramatic effect
         if (IsMaxWin(allSymbols))
         {
             print("Awarding max win amount!");
-
-            UpdateBalance(multiplier:5000);
+            UpdateBalance(multiplier: 5000);
         }
-        else if (IsSuperBonus(allSymbols))
+
+        if (IsSuperBonus(allSymbols))
         {
             const int spinsRemaining = 12;
 
@@ -139,21 +147,23 @@ public class WinManager : MonoBehaviour
             _freeSpinAmountTMP.gameObject.SetActive(true);
             _winAmountTitleTMP.SetText("Total Win");
 
-            // in case we explicitly entered the bonus from the settings
-            if (SlotMachine.WinMode == WinMode.SuperBonus) SlotMachine.WinMode = WinMode.NormalPlay;
+            // in case we explicitly entered the bonus via settings
+            if (SlotMachine.WinMode == WinMode.SuperBonus)
+                SlotMachine.WinMode = WinMode.NormalPlay;
 
             yield return StartCoroutine(RunFreeSpins(spinsRemaining));
 
-            // go back to original selections
+            // restore original UI
             _spinBtn.SetActive(true);
             _freeSpinTitle.SetActive(false);
             _freeSpinAmountTMP.gameObject.SetActive(false);
             _winAmountTitleTMP.SetText("Win");
 
-            if (SlotMachine.WinMode == WinMode.NormalPlay) SlotMachine.WinMode = WinMode.SuperBonus;
-
+            if (SlotMachine.WinMode == WinMode.NormalPlay)
+                SlotMachine.WinMode = WinMode.SuperBonus;
         }
-        else if (IsBonusSpin(allSymbols))
+
+        if (IsBonusSpin(allSymbols))
         {
             const int spinsRemaining = 10;
 
@@ -164,19 +174,172 @@ public class WinManager : MonoBehaviour
             _freeSpinAmountTMP.gameObject.SetActive(true);
             _winAmountTitleTMP.SetText("Total Win");
 
-            // in case we explicitly entered the bonus from the settings
-            if (SlotMachine.WinMode == WinMode.Bonus) SlotMachine.WinMode = WinMode.NormalPlay;
+            if (SlotMachine.WinMode == WinMode.Bonus)
+                SlotMachine.WinMode = WinMode.NormalPlay;
 
             yield return StartCoroutine(RunFreeSpins(spinsRemaining));
 
-            // go back to original selections
+            // restore original UI
             _spinBtn.SetActive(true);
             _freeSpinTitle.SetActive(false);
             _freeSpinAmountTMP.gameObject.SetActive(false);
             _winAmountTitleTMP.SetText("Win");
 
-            if (SlotMachine.WinMode == WinMode.NormalPlay) SlotMachine.WinMode = WinMode.Bonus;
+            if (SlotMachine.WinMode == WinMode.NormalPlay)
+                SlotMachine.WinMode = WinMode.Bonus;
         }
+
+        if (IsFourLeafClover(allSymbols))
+        {
+            const int multiplier = 400;
+            print($"Four leaf clover win, awarding {multiplier}x!");
+            UpdateBalance(multiplier);
+        }
+
+        if (IsFourOf(allSymbols, Symbol.Skull))
+        {
+            const int multiplier = 50;
+            print($"Four skulls win, awarding {multiplier}x!");
+            UpdateBalance(multiplier);
+        }
+        else if (IsThreeOf(allSymbols, Symbol.Skull))
+        {
+            const int multiplier = 30;
+            print($"Three skulls win, awarding {multiplier}x!");
+            UpdateBalance(multiplier);
+        }
+
+        if (IsFourOf(allSymbols, Symbol.Crocodile))
+        {
+            const int multiplier = 50;
+            print($"Four crocodiles win, awarding {multiplier}x!");
+            UpdateBalance(multiplier);
+        }
+        else if (IsThreeOf(allSymbols, Symbol.Crocodile))
+        {
+            const int multiplier = 30;
+            print($"Three crocodiles win, awarding {multiplier}x!");
+            UpdateBalance(multiplier);
+        }
+
+        if (IsFourOf(allSymbols, Symbol.Raven))
+        {
+            const int multiplier = 20;
+            print($"Four ravens win, awarding {multiplier}x!");
+            UpdateBalance(multiplier);
+        }
+        else if (IsThreeOf(allSymbols, Symbol.Raven))
+        {
+            const int multiplier = 10;
+            print($"Three ravens win, awarding {multiplier}x!");
+            UpdateBalance(multiplier);
+        }
+
+        if (IsFourOf(allSymbols, Symbol.Owl))
+        {
+            const int multiplier = 3;
+            print($"Four owls win, awarding {multiplier}x!");
+            UpdateBalance(multiplier);
+        }
+        else if (IsThreeOf(allSymbols, Symbol.Owl))
+        {
+            const int multiplier = 2;
+            print($"Three owls win, awarding {multiplier}x!");
+            UpdateBalance(multiplier);
+        }
+
+        if (IsFourOf(allSymbols, Symbol.Bat))
+        {
+            const int multiplier = 5;
+            print($"Four bats win, awarding {multiplier}x!");
+            UpdateBalance(multiplier);
+        }
+        else if (IsThreeOf(allSymbols, Symbol.Bat))
+        {
+            const int multiplier = 4;
+            print($"Three bats win, awarding {multiplier}x!");
+            UpdateBalance(multiplier);
+        }
+
+        if (IsFourOf(allSymbols, Symbol.Moth))
+        {
+            const int multiplier = 3;
+            print($"Four moths win, awarding {multiplier}x!");
+            UpdateBalance(multiplier);
+        }
+        else if (IsThreeOf(allSymbols, Symbol.Moth))
+        {
+            const int multiplier = 2;
+            print($"Three moths win, awarding {multiplier}x!");
+            UpdateBalance(multiplier);
+        }
+
+        if (IsFourOf(allSymbols, Symbol.Spider))
+        {
+            const int multiplier = 3;
+            print($"Four spiders win, awarding {multiplier}x!");
+            UpdateBalance(multiplier);
+        }
+        else if (IsThreeOf(allSymbols, Symbol.Spider))
+        {
+            const int multiplier = 2;
+            print($"Three spiders win, awarding {multiplier}x!");
+            UpdateBalance(multiplier);
+        }
+
+        if (IsFourOf(allSymbols, Symbol.Rose))
+        {
+            const int multiplier = 3;
+            print($"Four roses win, awarding {multiplier}x!");
+            UpdateBalance(multiplier);
+        }
+        else if (IsThreeOf(allSymbols, Symbol.Rose))
+        {
+            const int multiplier = 2;
+            print($"Three roses win, awarding {multiplier}x!");
+            UpdateBalance(multiplier);
+        }
+
+        if (IsFourOf(allSymbols, Symbol.LilyPad))
+        {
+            const int multiplier = 2;
+            print($"Four lily pads win, awarding {multiplier}x!");
+            UpdateBalance(multiplier);
+        }
+        else if (IsThreeOf(allSymbols, Symbol.LilyPad))
+        {
+            const int multiplier = 1;
+            print($"Three lily pads win, awarding {multiplier}x!");
+            UpdateBalance(multiplier);
+        }
+
+        if (IsFourOf(allSymbols, Symbol.Flower))
+        {
+            const int multiplier = 2;
+            print($"Four flowers win, awarding {multiplier}x!");
+            UpdateBalance(multiplier);
+        }
+        else if (IsThreeOf(allSymbols, Symbol.Flower))
+        {
+            const int multiplier = 1;
+            print($"Three flowers win, awarding {multiplier}x!");
+            UpdateBalance(multiplier);
+        }
+
+        if (IsFourOf(allSymbols, Symbol.DeadTree))
+        {
+            const int multiplier = 2;
+            print($"Four dead trees win, awarding {multiplier}x!");
+            UpdateBalance(multiplier);
+        }
+        else if (IsThreeOf(allSymbols, Symbol.DeadTree))
+        {
+            const int multiplier = 1;
+            print($"Three dead trees win, awarding {multiplier}x!");
+            UpdateBalance(multiplier);
+        }
+
+        #endregion
 
         SlotMachine.State = State.Ready;
     }
@@ -225,6 +388,20 @@ public class WinManager : MonoBehaviour
 
         } while (spinsRemaining > 0);
     }
+    private bool IsFourLeafClover(List<GameObject> allSymbols)
+    {
+        return HasSymbolCount(allSymbols, Symbol.Clover, 4);
+    }
+
+    private bool IsFourOf(List<GameObject> allSymbols, Symbol symbol)
+    {
+        return HasSymbolCount(allSymbols, symbol, requiredCount: 4);
+    }
+
+    private bool IsThreeOf(List<GameObject> allSymbols, Symbol symbol)
+    {
+        return HasSymbolCount(allSymbols, symbol, requiredCount: 3);
+    }
 
     private bool HasSymbolCount(List<GameObject> allSymbols, Symbol target, int requiredCount)
     {
@@ -232,12 +409,14 @@ public class WinManager : MonoBehaviour
 
         foreach (GameObject currentSymbol in allSymbols)
         {
+            if (currentSymbol == null) continue; // skip if we destroyed the object, only happens at the end of bonus spins for some reason
+
             if (currentSymbol.name == $"{target.ToString()}-symbol(Clone)")
             {
                 symbolCount++;
             }
         }
 
-        return symbolCount == requiredCount;
+        return symbolCount >= requiredCount;
     }
 }
