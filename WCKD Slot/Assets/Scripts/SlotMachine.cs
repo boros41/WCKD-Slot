@@ -122,11 +122,12 @@ public class SlotMachine : MonoBehaviour
     public void PopulateReels(float row1Y, float row2Y, float row3Y, float row4Y)
     {
         List<Dictionary<int, Symbol>> determinedSymbols = DetermineSymbols();
+        const string symbolPath = "Prefabs/Symbols/";
 
-        for (int r = 0; r < 4; r++)
+        for (int reel = 0; reel < 4; reel++)
         {
             GameObject parent = null;
-            switch (r)
+            switch (reel)
             {
                 // TODO: Move each case into a separate method for populating that reel. Look into delegate methods to reduce duplication.
                 case 0: // reel 1
@@ -135,7 +136,9 @@ public class SlotMachine : MonoBehaviour
 
                     for (int i = 0; i < symbolBackgrounds1.Capacity; i++)
                     {
-                        symbolBackgrounds1.Add(Instantiate(Resources.Load<GameObject>("Prefabs/symbol-background"), parent.transform));
+                        GameObject symbolBackground = Resources.Load<GameObject>($"{symbolPath}symbol-background");
+
+                        symbolBackgrounds1.Add(Instantiate(symbolBackground, parent.transform));
                     }
 
                     symbolBackgrounds1[0].transform.localPosition = new Vector3(Reel.Reel1X, row1Y, 1f);
@@ -144,9 +147,10 @@ public class SlotMachine : MonoBehaviour
                     symbolBackgrounds1[3].transform.localPosition = new Vector3(Reel.Reel1X, row4Y, 1f);
 
                     int j = 0;
-                    foreach (KeyValuePair<int, Symbol> kvp in determinedSymbols[r])
+                    foreach (KeyValuePair<int, Symbol> kvp in determinedSymbols[reel])
                     {
-                        Instantiate(Resources.Load<GameObject>($"Prefabs/{kvp.Value}-symbol"), symbolBackgrounds1[j].transform);
+                        GameObject symbol = Resources.Load<GameObject>($"{symbolPath}{kvp.Value}-symbol");
+                        Instantiate(symbol, symbolBackgrounds1[j].transform);
 
                         j++;
                     }
@@ -158,7 +162,9 @@ public class SlotMachine : MonoBehaviour
 
                     for (int i = 0; i < symbolBackgrounds2.Capacity; i++)
                     {
-                        symbolBackgrounds2.Add(Instantiate(Resources.Load<GameObject>("Prefabs/symbol-background"), parent.transform));
+                        GameObject symbolBackground = Resources.Load<GameObject>($"{symbolPath}symbol-background");
+
+                        symbolBackgrounds2.Add(Instantiate(symbolBackground, parent.transform));
                     }
 
                     symbolBackgrounds2[0].transform.localPosition = new Vector3(Reel.Reel2X, row1Y, 1f);
@@ -167,9 +173,10 @@ public class SlotMachine : MonoBehaviour
                     symbolBackgrounds2[3].transform.localPosition = new Vector3(Reel.Reel2X, row4Y, 1f);
 
                     int k = 0;
-                    foreach (KeyValuePair<int, Symbol> kvp in determinedSymbols[r])
+                    foreach (KeyValuePair<int, Symbol> kvp in determinedSymbols[reel])
                     {
-                        Instantiate(Resources.Load<GameObject>($"Prefabs/{kvp.Value}-symbol"), symbolBackgrounds2[k].transform);
+                        GameObject symbol = Resources.Load<GameObject>($"{symbolPath}{kvp.Value}-symbol");
+                        Instantiate(symbol, symbolBackgrounds2[k].transform);
 
                         k++;
                     }
@@ -181,7 +188,9 @@ public class SlotMachine : MonoBehaviour
 
                     for (int i = 0; i < symbolBackgrounds3.Capacity; i++)
                     {
-                        symbolBackgrounds3.Add(Instantiate(Resources.Load<GameObject>("Prefabs/symbol-background"), parent.transform));
+                        GameObject symbolBackground = Resources.Load<GameObject>($"{symbolPath}symbol-background");
+
+                        symbolBackgrounds3.Add(Instantiate(symbolBackground, parent.transform));
                     }
 
                     symbolBackgrounds3[0].transform.localPosition = new Vector3(Reel.Reel3X, row1Y, 1f);
@@ -190,9 +199,10 @@ public class SlotMachine : MonoBehaviour
                     symbolBackgrounds3[3].transform.localPosition = new Vector3(Reel.Reel3X, row4Y, 1f);
 
                     int l = 0;
-                    foreach (KeyValuePair<int, Symbol> kvp in determinedSymbols[r])
+                    foreach (KeyValuePair<int, Symbol> kvp in determinedSymbols[reel])
                     {
-                        Instantiate(Resources.Load<GameObject>($"Prefabs/{kvp.Value}-symbol"), symbolBackgrounds3[l].transform);
+                        GameObject symbol = Resources.Load<GameObject>($"{symbolPath}{kvp.Value}-symbol");
+                        Instantiate(symbol, symbolBackgrounds3[l].transform);
 
                         l++;
                     }
@@ -204,7 +214,9 @@ public class SlotMachine : MonoBehaviour
 
                     for (int i = 0; i < symbolBackgrounds4.Capacity; i++)
                     {
-                        symbolBackgrounds4.Add(Instantiate(Resources.Load<GameObject>("Prefabs/symbol-background"), parent.transform));
+                        GameObject symbolBackground = Resources.Load<GameObject>($"{symbolPath}symbol-background");
+
+                        symbolBackgrounds4.Add(Instantiate(symbolBackground, parent.transform));
                     }
 
                     symbolBackgrounds4[0].transform.localPosition = new Vector3(Reel.Reel4X, row1Y, 1f);
@@ -213,9 +225,10 @@ public class SlotMachine : MonoBehaviour
                     symbolBackgrounds4[3].transform.localPosition = new Vector3(Reel.Reel4X, row4Y, 1f);
 
                     int m = 0;
-                    foreach (KeyValuePair<int, Symbol> kvp in determinedSymbols[r])
+                    foreach (KeyValuePair<int, Symbol> kvp in determinedSymbols[reel])
                     {
-                        Instantiate(Resources.Load<GameObject>($"Prefabs/{kvp.Value}-symbol"), symbolBackgrounds4[m].transform);
+                        GameObject symbol = Resources.Load<GameObject>($"{symbolPath}{kvp.Value}-symbol");
+                        Instantiate(symbol, symbolBackgrounds4[m].transform);
 
                         m++;
                     }
