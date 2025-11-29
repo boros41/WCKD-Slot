@@ -155,7 +155,27 @@ public class WinManager : MonoBehaviour
         }
         else if (IsBonusSpin(allSymbols))
         {
+            const int spinsRemaining = 10;
+
             print("Normal bonus: awarding 10 free spins!");
+
+            _spinBtn.SetActive(false);
+            _freeSpinTitle.SetActive(true);
+            _freeSpinAmountTMP.gameObject.SetActive(true);
+            _winAmountTitleTMP.SetText("Total Win");
+
+            // in case we explicitly entered the bonus from the settings
+            if (SlotMachine.WinMode == WinMode.Bonus) SlotMachine.WinMode = WinMode.NormalPlay;
+
+            yield return StartCoroutine(RunFreeSpins(spinsRemaining));
+
+            // go back to original selections
+            _spinBtn.SetActive(true);
+            _freeSpinTitle.SetActive(false);
+            _freeSpinAmountTMP.gameObject.SetActive(false);
+            _winAmountTitleTMP.SetText("Win");
+
+            if (SlotMachine.WinMode == WinMode.NormalPlay) SlotMachine.WinMode = WinMode.Bonus;
         }
 
         SlotMachine.State = State.Ready;
