@@ -49,9 +49,9 @@ public class Reel
 
     public List<int> StopIndices()
     {
-        // TODO: Look into "more random" RNGs for slot machines
         _stopIndices.Clear();
 
+        //System.Security.Cryptography.RandomNumberGenerator.GetInt32(); // TODO: use this more secure rng
         int stopIndex = Random.Range((int)0, Strip.Count); // represents the symbol in the first row of the visible reels' columns
         _stopIndices.Add(stopIndex);
 

@@ -11,15 +11,18 @@ using UnityEngine;
 
 public class SlotMachine : MonoBehaviour
 {
-    [SerializeField] private WinManager _winManager; 
+    #region Properties
+    [SerializeField] private WinManager _winManager;
+    [SerializeField] private float _spinDuration = 2.5f;
+
+    public static State State;
+    public static WinMode WinMode = WinMode.NormalPlay;
+
     private Reel _reel1;
     private Reel _reel2;
     private Reel _reel3;
     private Reel _reel4;
-    public static State State;
-    public static WinMode WinMode = WinMode.NormalPlay;
-
-    [SerializeField] private float _spinDuration = 2.5f;
+    #endregion
 
     private void Start()
     {
@@ -407,21 +410,22 @@ public class SlotMachine : MonoBehaviour
         List<GameObject> reel3SymbolBgs = SlotUtils.GetSymbolBackgrounds(reel: 3);
         List<GameObject> reel4SymbolBgs = SlotUtils.GetSymbolBackgrounds(reel: 4);
 
-        _reel1.Spin(reel1SymbolBgs, _spinDuration, RemoveBackgroundSymbolsOnComplete(1));
+        // TODO: refactor callback into lambda
+        _reel1.Spin(reel1SymbolBgs, _spinDuration, RemoveBackgroundSymbolsOnComplete());
 
         yield return new WaitForSeconds(delay);
 
-        _reel2.Spin(reel2SymbolBgs, _spinDuration, RemoveBackgroundSymbolsOnComplete(2));
+        _reel2.Spin(reel2SymbolBgs, _spinDuration, RemoveBackgroundSymbolsOnComplete());
 
         yield return new WaitForSeconds(delay);
 
-        _reel3.Spin(reel3SymbolBgs, _spinDuration, RemoveBackgroundSymbolsOnComplete(3));
+        _reel3.Spin(reel3SymbolBgs, _spinDuration, RemoveBackgroundSymbolsOnComplete());
 
         yield return new WaitForSeconds(delay);
 
         _reel4.Spin(reel4SymbolBgs, _spinDuration, symbolBackgrounds =>
         {
-            RemoveBackgroundSymbolsOnComplete(4)(symbolBackgrounds);
+            RemoveBackgroundSymbolsOnComplete()(symbolBackgrounds);
             spinFinished = true;
         });
 
@@ -435,7 +439,7 @@ public class SlotMachine : MonoBehaviour
 
 
 
-    private Action<List<GameObject>> RemoveBackgroundSymbolsOnComplete(int reel)
+    private Action<List<GameObject>> RemoveBackgroundSymbolsOnComplete()
     {
         return (symbolBackgrounds) =>
         {

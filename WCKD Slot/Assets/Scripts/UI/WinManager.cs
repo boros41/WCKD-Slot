@@ -1,6 +1,7 @@
 using Assets.Scripts;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -8,6 +9,7 @@ using UnityEngine.UI;
 
 public class WinManager : MonoBehaviour
 {
+    #region Properties
     [SerializeField] private SlotMachine _slotMachine;
     [SerializeField] private GameObject _spinBtn;
     [SerializeField] private TextMeshProUGUI _playAmountTMP;
@@ -16,9 +18,11 @@ public class WinManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _winAmountTMP;
     [SerializeField] private GameObject _freeSpinTitle;
     [SerializeField] private TextMeshProUGUI _freeSpinAmountTMP;
+    [SerializeField] private AudioSource _winSoundFx;
 
     private float _playAmount = 1f;
     private float _balance = 1000f;
+    #endregion
 
     private void Update()
     {
@@ -142,6 +146,7 @@ public class WinManager : MonoBehaviour
 
             print("Super bonus: awarding 12 free spins!");
 
+            // TODO: move to method
             _spinBtn.SetActive(false);
             _freeSpinTitle.SetActive(true);
             _freeSpinAmountTMP.gameObject.SetActive(true);
@@ -191,6 +196,9 @@ public class WinManager : MonoBehaviour
 
         if (IsFourLeafClover(allSymbols))
         {
+            List<GameObject> targetSymbols = GetTargetSymbols(allSymbols, Symbol.Clover);
+            yield return StartCoroutine(AnimateSymbols(targetSymbols));
+
             const int multiplier = 400;
             print($"Four leaf clover win, awarding {multiplier}x!");
             UpdateBalance(multiplier);
@@ -344,6 +352,38 @@ public class WinManager : MonoBehaviour
         SlotMachine.State = State.Ready;
     }
 
+    private IEnumerator AnimateSymbols(List<GameObject> symbols)
+    {
+        bool isFinished = false;
+        GameObject lastSymbol = symbols[^1];
+
+        _winSoundFx.Play();
+
+        foreach (GameObject currentSymbol in symbols)
+        {
+            if (currentSymbol != lastSymbol)
+            {
+                LeanTween.scale(currentSymbol, new Vector3(1.2f, 1.2f, 1f), 0.5f)
+                    .setOnComplete(() =>
+                    {
+                        LeanTween.scale(currentSymbol, Vector3.one, 0.5f);
+                    });
+            }
+            else
+            {
+                LeanTween.scale(currentSymbol, new Vector3(1.2f, 1.2f, 1f), 0.5f)
+                    .setOnComplete(() =>
+                    {
+                        LeanTween.scale(currentSymbol, Vector3.one, 0.5f)
+                            .setOnComplete(() => isFinished = true);
+                    });
+            }
+
+        }
+
+        yield return new WaitUntil(() => isFinished);
+    }
+
     private bool IsMaxWin(List<GameObject> allSymbols)
     {
         int maxWinSymbolsCount = 0;
@@ -403,7 +443,7 @@ public class WinManager : MonoBehaviour
         return HasSymbolCount(allSymbols, symbol, requiredCount: 3);
     }
 
-    private bool HasSymbolCount(List<GameObject> allSymbols, Symbol target, int requiredCount)
+    private bool HasSymbolCount(List<GameObject> allSymbols, Symbol targetSymbol, int requiredCount)
     {
         int symbolCount = 0;
 
@@ -411,12 +451,41 @@ public class WinManager : MonoBehaviour
         {
             if (currentSymbol == null) continue; // skip if we destroyed the object, only happens at the end of bonus spins for some reason
 
-            if (currentSymbol.name == $"{target.ToString()}-symbol(Clone)")
+            if (currentSymbol.name == $"{targetSymbol.ToString()}-symbol(Clone)")
             {
                 symbolCount++;
             }
         }
 
-        return symbolCount >= requiredCount;
+        if (symbolCount == requiredCount)
+        {
+            return true;
+        }
+        else if (symbolCount >= requiredCount)
+        {
+            // TODO: Handle user winning more than the required amount by substituting extra symbols with a multiplier or something 
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    private List<GameObject> GetTargetSymbols(List<GameObject> symbols, Symbol targetSymbol)
+    {
+        List<GameObject> targetSymbols = new List<GameObject>();
+
+        foreach (GameObject currentSymbol in symbols)
+        {
+            if (currentSymbol == null) continue; // skip if we destroyed the object, only happens at the end of bonus spins for some reason
+
+            if (currentSymbol.name == $"{targetSymbol.ToString()}-symbol(Clone)")
+            {
+                targetSymbols.Add(currentSymbol);
+            }
+        }
+
+        return targetSymbols;
     }
 }
