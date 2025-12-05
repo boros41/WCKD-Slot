@@ -59,7 +59,7 @@ public class WinManager : MonoBehaviour
     public void UpdateBalance(float multiplier)
     {
         float winAmount = _playAmount * multiplier;
-        float oldWinAmount = float.Parse(_winAmountTMP.text[1..]) ; // in case there are multiple wins at once
+        float oldWinAmount = float.Parse(_winAmountTMP.text[1..]); // in case there are multiple wins at once
         float totalWinAmount = winAmount + oldWinAmount;
 
         _winAmountTMP.SetText($"{totalWinAmount:C}");
@@ -361,24 +361,19 @@ public class WinManager : MonoBehaviour
 
         foreach (GameObject currentSymbol in symbols)
         {
-            if (currentSymbol != lastSymbol)
-            {
-                LeanTween.scale(currentSymbol, new Vector3(1.2f, 1.2f, 1f), 0.5f)
-                    .setOnComplete(() =>
-                    {
-                        LeanTween.scale(currentSymbol, Vector3.one, 0.5f);
-                    });
-            }
-            else
-            {
-                LeanTween.scale(currentSymbol, new Vector3(1.2f, 1.2f, 1f), 0.5f)
-                    .setOnComplete(() =>
-                    {
-                        LeanTween.scale(currentSymbol, Vector3.one, 0.5f)
-                            .setOnComplete(() => isFinished = true);
-                    });
-            }
-
+            LeanTween.scale(currentSymbol, new Vector3(1.2f, 1.2f, 1f), 0.5f)
+                     .setOnComplete(() =>
+                     {
+                         if (currentSymbol != lastSymbol)
+                         {
+                             LeanTween.scale(currentSymbol, Vector3.one, 0.5f);
+                         }
+                         else
+                         {
+                             LeanTween.scale(currentSymbol, Vector3.one, 0.5f)
+                                      .setOnComplete(() => isFinished = true);
+                         }
+                     });
         }
 
         yield return new WaitUntil(() => isFinished);
