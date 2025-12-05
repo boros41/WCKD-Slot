@@ -114,12 +114,17 @@ public class WinManager : MonoBehaviour
         _playAmountTMP.SetText($"{_playAmount:C}");
     }
 
-    public IEnumerator CalculateWins()
+    public IEnumerator CalculateWins(List<GameObject> reel1SymbolBgs, List<GameObject> reel2SymbolBgs, List<GameObject> reel3SymbolBgs, List<GameObject> reel4SymbolBgs)
     {
-        List<GameObject> reel1Symbols = SlotUtils.GetChildGameObjects(SlotUtils.GetSymbolBackgrounds(reel: 1));
-        List<GameObject> reel2Symbols = SlotUtils.GetChildGameObjects(SlotUtils.GetSymbolBackgrounds(reel: 2));
-        List<GameObject> reel3Symbols = SlotUtils.GetChildGameObjects(SlotUtils.GetSymbolBackgrounds(reel: 3));
-        List<GameObject> reel4Symbols = SlotUtils.GetChildGameObjects(SlotUtils.GetSymbolBackgrounds(reel: 4));
+        List<GameObject> reel1Symbols = SlotUtils.GetChildGameObjects(reel1SymbolBgs);
+        List<GameObject> reel2Symbols = SlotUtils.GetChildGameObjects(reel2SymbolBgs);
+        List<GameObject> reel3Symbols = SlotUtils.GetChildGameObjects(reel3SymbolBgs);
+        List<GameObject> reel4Symbols = SlotUtils.GetChildGameObjects(reel4SymbolBgs);
+
+        if (reel4Symbols.Count > 4)
+        {
+            Debug.LogError("Destroyed symbols detected!");
+        }
 
         List<GameObject> allSymbols = new List<GameObject>(reel1Symbols.Count +
                                                            reel2Symbols.Count +
@@ -131,20 +136,32 @@ public class WinManager : MonoBehaviour
         allSymbols.AddRange(reel3Symbols);
         allSymbols.AddRange(reel4Symbols);
 
+        foreach (GameObject symbol in allSymbols)
+        {
+            if (symbol == null)
+            {
+                Debug.LogError("DESTROYED SYMBOL DETECTED!");
+            }
+        }
+
         #region Determine Win
 
         // TODO: For each of these, try to tween the scale of the symbols to highlight the winning symbols for dramatic effect
         if (IsMaxWin(allSymbols))
         {
             print("Awarding max win amount!");
+
+            List<GameObject> targetSymbols = GetTargetSymbols(allSymbols, targetSymbols:new List<Symbol>() { Symbol.W , Symbol.C, Symbol.K, Symbol.D});
+            yield return StartCoroutine(AnimateSymbols(targetSymbols));
+
             UpdateBalance(multiplier: 5000);
         }
 
         if (IsSuperBonus(allSymbols))
         {
-            const int spinsRemaining = 12;
-
             print("Super bonus: awarding 12 free spins!");
+
+            const int spinsRemaining = 12;
 
             // TODO: move to method
             _spinBtn.SetActive(false);
@@ -170,9 +187,9 @@ public class WinManager : MonoBehaviour
 
         if (IsBonusSpin(allSymbols))
         {
-            const int spinsRemaining = 10;
-
             print("Normal bonus: awarding 10 free spins!");
+
+            const int spinsRemaining = 10;
 
             _spinBtn.SetActive(false);
             _freeSpinTitle.SetActive(true);
@@ -196,11 +213,12 @@ public class WinManager : MonoBehaviour
 
         if (IsFourLeafClover(allSymbols))
         {
+            const int multiplier = 400;
+            print($"Four leaf clover win, awarding {multiplier}x!");
+
             List<GameObject> targetSymbols = GetTargetSymbols(allSymbols, Symbol.Clover);
             yield return StartCoroutine(AnimateSymbols(targetSymbols));
 
-            const int multiplier = 400;
-            print($"Four leaf clover win, awarding {multiplier}x!");
             UpdateBalance(multiplier);
         }
 
@@ -208,12 +226,20 @@ public class WinManager : MonoBehaviour
         {
             const int multiplier = 50;
             print($"Four skulls win, awarding {multiplier}x!");
+
+            List<GameObject> targetSymbols = GetTargetSymbols(allSymbols, Symbol.Skull);
+            yield return StartCoroutine(AnimateSymbols(targetSymbols));
+
             UpdateBalance(multiplier);
         }
         else if (IsThreeOf(allSymbols, Symbol.Skull))
         {
             const int multiplier = 30;
             print($"Three skulls win, awarding {multiplier}x!");
+
+            List<GameObject> targetSymbols = GetTargetSymbols(allSymbols, Symbol.Skull);
+            yield return StartCoroutine(AnimateSymbols(targetSymbols));
+
             UpdateBalance(multiplier);
         }
 
@@ -221,12 +247,20 @@ public class WinManager : MonoBehaviour
         {
             const int multiplier = 50;
             print($"Four crocodiles win, awarding {multiplier}x!");
+
+            List<GameObject> targetSymbols = GetTargetSymbols(allSymbols, Symbol.Crocodile);
+            yield return StartCoroutine(AnimateSymbols(targetSymbols));
+
             UpdateBalance(multiplier);
         }
         else if (IsThreeOf(allSymbols, Symbol.Crocodile))
         {
             const int multiplier = 30;
             print($"Three crocodiles win, awarding {multiplier}x!");
+
+            List<GameObject> targetSymbols = GetTargetSymbols(allSymbols, Symbol.Crocodile);
+            yield return StartCoroutine(AnimateSymbols(targetSymbols));
+
             UpdateBalance(multiplier);
         }
 
@@ -234,12 +268,20 @@ public class WinManager : MonoBehaviour
         {
             const int multiplier = 20;
             print($"Four ravens win, awarding {multiplier}x!");
+
+            List<GameObject> targetSymbols = GetTargetSymbols(allSymbols, Symbol.Raven);
+            yield return StartCoroutine(AnimateSymbols(targetSymbols));
+
             UpdateBalance(multiplier);
         }
         else if (IsThreeOf(allSymbols, Symbol.Raven))
         {
             const int multiplier = 10;
             print($"Three ravens win, awarding {multiplier}x!");
+
+            List<GameObject> targetSymbols = GetTargetSymbols(allSymbols, Symbol.Raven);
+            yield return StartCoroutine(AnimateSymbols(targetSymbols));
+
             UpdateBalance(multiplier);
         }
 
@@ -247,12 +289,20 @@ public class WinManager : MonoBehaviour
         {
             const int multiplier = 3;
             print($"Four owls win, awarding {multiplier}x!");
+
+            List<GameObject> targetSymbols = GetTargetSymbols(allSymbols, Symbol.Owl);
+            yield return StartCoroutine(AnimateSymbols(targetSymbols));
+
             UpdateBalance(multiplier);
         }
         else if (IsThreeOf(allSymbols, Symbol.Owl))
         {
             const int multiplier = 2;
             print($"Three owls win, awarding {multiplier}x!");
+
+            List<GameObject> targetSymbols = GetTargetSymbols(allSymbols, Symbol.Owl);
+            yield return StartCoroutine(AnimateSymbols(targetSymbols));
+
             UpdateBalance(multiplier);
         }
 
@@ -260,12 +310,20 @@ public class WinManager : MonoBehaviour
         {
             const int multiplier = 5;
             print($"Four bats win, awarding {multiplier}x!");
+
+            List<GameObject> targetSymbols = GetTargetSymbols(allSymbols, Symbol.Bat);
+            yield return StartCoroutine(AnimateSymbols(targetSymbols));
+
             UpdateBalance(multiplier);
         }
         else if (IsThreeOf(allSymbols, Symbol.Bat))
         {
             const int multiplier = 4;
             print($"Three bats win, awarding {multiplier}x!");
+
+            List<GameObject> targetSymbols = GetTargetSymbols(allSymbols, Symbol.Bat);
+            yield return StartCoroutine(AnimateSymbols(targetSymbols));
+
             UpdateBalance(multiplier);
         }
 
@@ -273,12 +331,20 @@ public class WinManager : MonoBehaviour
         {
             const int multiplier = 3;
             print($"Four moths win, awarding {multiplier}x!");
+
+            List<GameObject> targetSymbols = GetTargetSymbols(allSymbols, Symbol.Moth);
+            yield return StartCoroutine(AnimateSymbols(targetSymbols));
+
             UpdateBalance(multiplier);
         }
         else if (IsThreeOf(allSymbols, Symbol.Moth))
         {
             const int multiplier = 2;
             print($"Three moths win, awarding {multiplier}x!");
+
+            List<GameObject> targetSymbols = GetTargetSymbols(allSymbols, Symbol.Moth);
+            yield return StartCoroutine(AnimateSymbols(targetSymbols));
+
             UpdateBalance(multiplier);
         }
 
@@ -286,12 +352,20 @@ public class WinManager : MonoBehaviour
         {
             const int multiplier = 3;
             print($"Four spiders win, awarding {multiplier}x!");
+
+            List<GameObject> targetSymbols = GetTargetSymbols(allSymbols, Symbol.Spider);
+            yield return StartCoroutine(AnimateSymbols(targetSymbols));
+
             UpdateBalance(multiplier);
         }
         else if (IsThreeOf(allSymbols, Symbol.Spider))
         {
             const int multiplier = 2;
             print($"Three spiders win, awarding {multiplier}x!");
+
+            List<GameObject> targetSymbols = GetTargetSymbols(allSymbols, Symbol.Spider);
+            yield return StartCoroutine(AnimateSymbols(targetSymbols));
+
             UpdateBalance(multiplier);
         }
 
@@ -299,12 +373,20 @@ public class WinManager : MonoBehaviour
         {
             const int multiplier = 3;
             print($"Four roses win, awarding {multiplier}x!");
+
+            List<GameObject> targetSymbols = GetTargetSymbols(allSymbols, Symbol.Rose);
+            yield return StartCoroutine(AnimateSymbols(targetSymbols));
+
             UpdateBalance(multiplier);
         }
         else if (IsThreeOf(allSymbols, Symbol.Rose))
         {
             const int multiplier = 2;
             print($"Three roses win, awarding {multiplier}x!");
+
+            List<GameObject> targetSymbols = GetTargetSymbols(allSymbols, Symbol.Rose);
+            yield return StartCoroutine(AnimateSymbols(targetSymbols));
+
             UpdateBalance(multiplier);
         }
 
@@ -312,12 +394,20 @@ public class WinManager : MonoBehaviour
         {
             const int multiplier = 2;
             print($"Four lily pads win, awarding {multiplier}x!");
+
+            List<GameObject> targetSymbols = GetTargetSymbols(allSymbols, Symbol.LilyPad);
+            yield return StartCoroutine(AnimateSymbols(targetSymbols));
+
             UpdateBalance(multiplier);
         }
         else if (IsThreeOf(allSymbols, Symbol.LilyPad))
         {
             const int multiplier = 1;
             print($"Three lily pads win, awarding {multiplier}x!");
+
+            List<GameObject> targetSymbols = GetTargetSymbols(allSymbols, Symbol.LilyPad);
+            yield return StartCoroutine(AnimateSymbols(targetSymbols));
+
             UpdateBalance(multiplier);
         }
 
@@ -325,12 +415,20 @@ public class WinManager : MonoBehaviour
         {
             const int multiplier = 2;
             print($"Four flowers win, awarding {multiplier}x!");
+
+            List<GameObject> targetSymbols = GetTargetSymbols(allSymbols, Symbol.Flower);
+            yield return StartCoroutine(AnimateSymbols(targetSymbols));
+
             UpdateBalance(multiplier);
         }
         else if (IsThreeOf(allSymbols, Symbol.Flower))
         {
             const int multiplier = 1;
             print($"Three flowers win, awarding {multiplier}x!");
+
+            List<GameObject> targetSymbols = GetTargetSymbols(allSymbols, Symbol.Flower);
+            yield return StartCoroutine(AnimateSymbols(targetSymbols));
+
             UpdateBalance(multiplier);
         }
 
@@ -338,18 +436,27 @@ public class WinManager : MonoBehaviour
         {
             const int multiplier = 2;
             print($"Four dead trees win, awarding {multiplier}x!");
+
+            List<GameObject> targetSymbols = GetTargetSymbols(allSymbols, Symbol.DeadTree);
+            yield return StartCoroutine(AnimateSymbols(targetSymbols));
+
             UpdateBalance(multiplier);
         }
         else if (IsThreeOf(allSymbols, Symbol.DeadTree))
         {
             const int multiplier = 1;
             print($"Three dead trees win, awarding {multiplier}x!");
+
+            List<GameObject> targetSymbols = GetTargetSymbols(allSymbols, Symbol.DeadTree);
+            yield return StartCoroutine(AnimateSymbols(targetSymbols));
+
             UpdateBalance(multiplier);
         }
 
         #endregion
 
         SlotMachine.State = State.Ready;
+        print($"Current state: {SlotMachine.State}");
     }
 
     private IEnumerator AnimateSymbols(List<GameObject> symbols)
@@ -374,6 +481,24 @@ public class WinManager : MonoBehaviour
                                       .setOnComplete(() => isFinished = true);
                          }
                      });
+
+            /*if (currentSymbol != lastSymbol)
+            {
+                LeanTween.scale(currentSymbol, new Vector3(1.2f, 1.2f, 1f), 0.5f)
+                         .setOnComplete(() =>
+                         {
+                             LeanTween.scale(currentSymbol, Vector3.one, 0.5f);
+                         });
+            }
+            else
+            {
+                LeanTween.scale(currentSymbol, new Vector3(1.2f, 1.2f, 1f), 0.5f)
+                         .setOnComplete(() =>
+                         {
+                             LeanTween.scale(currentSymbol, Vector3.one, 0.5f)
+                                      .setOnComplete(() => isFinished = true);
+                         });
+            }*/
         }
 
         yield return new WaitUntil(() => isFinished);
@@ -440,6 +565,11 @@ public class WinManager : MonoBehaviour
 
     private bool HasSymbolCount(List<GameObject> allSymbols, Symbol targetSymbol, int requiredCount)
     {
+        if (allSymbols.Count > 16)
+        {
+            Debug.LogError("Destroyed symbol detected!");
+        }
+
         int symbolCount = 0;
 
         foreach (GameObject currentSymbol in allSymbols)
@@ -467,20 +597,46 @@ public class WinManager : MonoBehaviour
         }
     }
 
-    private List<GameObject> GetTargetSymbols(List<GameObject> symbols, Symbol targetSymbol)
+    private List<GameObject> GetTargetSymbols(List<GameObject> allSymbols, Symbol targetSymbol)
     {
-        List<GameObject> targetSymbols = new List<GameObject>();
+        List<GameObject> symbols = new List<GameObject>();
 
-        foreach (GameObject currentSymbol in symbols)
+        foreach (GameObject currentSymbol in allSymbols)
         {
-            if (currentSymbol == null) continue; // skip if we destroyed the object, only happens at the end of bonus spins for some reason
+            if (currentSymbol == null)
+            {
+                continue;
+            }; // skip if we destroyed the object, only happens at the end of bonus spins for some reason
 
             if (currentSymbol.name == $"{targetSymbol.ToString()}-symbol(Clone)")
             {
-                targetSymbols.Add(currentSymbol);
+                symbols.Add(currentSymbol);
             }
         }
 
-        return targetSymbols;
+        return symbols;
+    }
+
+    private List<GameObject> GetTargetSymbols(List<GameObject> allSymbols, List<Symbol> targetSymbols)
+    {
+        List<GameObject> symbols = new List<GameObject>();
+
+        foreach (GameObject currentSymbol in allSymbols)
+        {
+            if (currentSymbol == null)
+            {
+                continue;
+            } // safeguard in case we destroyed it
+
+            foreach (Symbol targetSymbol in targetSymbols)
+            {
+                if (currentSymbol.name == $"{targetSymbol.ToString()}-symbol(Clone)")
+                {
+                    symbols.Add(currentSymbol);
+                }
+            }
+        }
+
+        return symbols;
     }
 }

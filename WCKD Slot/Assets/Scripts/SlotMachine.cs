@@ -22,6 +22,11 @@ public class SlotMachine : MonoBehaviour
     private Reel _reel2;
     private Reel _reel3;
     private Reel _reel4;
+
+    private List<GameObject> _reel1SymbolBgs = new List<GameObject>(4);
+    private List<GameObject> _reel2SymbolBgs = new List<GameObject>(4);
+    private List<GameObject> _reel3SymbolBgs = new List<GameObject>(4);
+    private List<GameObject> _reel4SymbolBgs = new List<GameObject>(4);
     #endregion
 
     private void Start()
@@ -64,6 +69,11 @@ public class SlotMachine : MonoBehaviour
         PopulateReels(Reel.Row1Y, Reel.Row2Y, Reel.Row3Y, Reel.Row4Y);
 
         State = State.Ready;
+    }
+
+    private void Update()
+    {
+        DestroyOutOfBoundsSymbols();
     }
 
     #region OnGameLaunch
@@ -403,59 +413,102 @@ public class SlotMachine : MonoBehaviour
         // each symbol has a y difference of ~1.0673333 between each other
         PopulateReels(Reel.Row1UpperY, Reel.Row2UpperY, Reel.Row3UpperY, Reel.Row4UpperY);
 
+        _reel1SymbolBgs = SlotUtils.GetSymbolBackgrounds(reel: 1);
+        _reel2SymbolBgs = SlotUtils.GetSymbolBackgrounds(reel: 2);
+        _reel3SymbolBgs = SlotUtils.GetSymbolBackgrounds(reel: 3);
+        _reel4SymbolBgs = SlotUtils.GetSymbolBackgrounds(reel: 4);
+
         float delay = 0.1f;
         bool spinFinished = false;
-        List<GameObject> reel1SymbolBgs = SlotUtils.GetSymbolBackgrounds(reel: 1);
-        List<GameObject> reel2SymbolBgs = SlotUtils.GetSymbolBackgrounds(reel: 2);
-        List<GameObject> reel3SymbolBgs = SlotUtils.GetSymbolBackgrounds(reel: 3);
-        List<GameObject> reel4SymbolBgs = SlotUtils.GetSymbolBackgrounds(reel: 4);
+        
 
         // TODO: refactor callback into lambda
-        _reel1.Spin(reel1SymbolBgs, _spinDuration, RemoveBackgroundSymbolsOnComplete());
+        //_reel1.Spin(reel1SymbolBgs, _spinDuration);
+        StartCoroutine(_reel1.Spin(_reel1SymbolBgs, _spinDuration));
 
         yield return new WaitForSeconds(delay);
 
-        _reel2.Spin(reel2SymbolBgs, _spinDuration, RemoveBackgroundSymbolsOnComplete());
+        //_reel2.Spin(reel2SymbolBgs, _spinDuration);
+        StartCoroutine(_reel2.Spin(_reel2SymbolBgs, _spinDuration));
 
         yield return new WaitForSeconds(delay);
 
-        _reel3.Spin(reel3SymbolBgs, _spinDuration, RemoveBackgroundSymbolsOnComplete());
+        //_reel3.Spin(reel3SymbolBgs, _spinDuration);
+        StartCoroutine(_reel3.Spin(_reel3SymbolBgs, _spinDuration));
 
         yield return new WaitForSeconds(delay);
 
-        _reel4.Spin(reel4SymbolBgs, _spinDuration, symbolBackgrounds =>
-        {
-            RemoveBackgroundSymbolsOnComplete()(symbolBackgrounds);
-            spinFinished = true;
-        });
+        //_reel4.Spin(reel4SymbolBgs, _spinDuration);
 
-        yield return new WaitUntil(() => spinFinished);
+        yield return StartCoroutine(_reel4.Spin(_reel4SymbolBgs, _spinDuration));
+
+        //yield return new WaitUntil(() => spinFinished);
 
         State = State.CalculatingWins;
         print($"Current state: {State}");
 
-        yield return _winManager.CalculateWins();
+        yield return _winManager.CalculateWins(_reel1SymbolBgs, _reel2SymbolBgs, _reel3SymbolBgs, _reel4SymbolBgs);
     }
 
-
-
-    private Action<List<GameObject>> RemoveBackgroundSymbolsOnComplete()
+    // TODO: refactor this
+    private void DestroyOutOfBoundsSymbols()
     {
-        return (symbolBackgrounds) =>
+        List<GameObject> symbolBgsToDestroy = new List<GameObject>();
+
+        foreach (GameObject symbolBg in _reel1SymbolBgs)
         {
-            foreach (GameObject symbolBackground in symbolBackgrounds.GetRange(0, 4))
+            if (symbolBg.transform.localPosition.y <= Reel.Row1LowerY)
             {
-                symbolBackgrounds.Remove(symbolBackground);
-                Destroy(symbolBackground);
+                symbolBgsToDestroy.Add(symbolBg);
             }
-        };
+        }
+
+        foreach (GameObject symbolBg in symbolBgsToDestroy)
+        {
+            _reel1SymbolBgs.Remove(symbolBg);
+            Destroy(symbolBg);
+        }
+
+        foreach (GameObject symbolBg in _reel2SymbolBgs)
+        {
+            if (symbolBg.transform.localPosition.y <= Reel.Row1LowerY)
+            {
+                symbolBgsToDestroy.Add(symbolBg);
+            }
+        }
+
+        foreach (GameObject symbolBg in symbolBgsToDestroy)
+        {
+            _reel2SymbolBgs.Remove(symbolBg);
+            Destroy(symbolBg);
+        }
+
+        foreach (GameObject symbolBg in _reel3SymbolBgs)
+        {
+            if (symbolBg.transform.localPosition.y <= Reel.Row1LowerY)
+            {
+                symbolBgsToDestroy.Add(symbolBg);
+            }
+        }
+
+        foreach (GameObject symbolBg in symbolBgsToDestroy)
+        {
+            _reel3SymbolBgs.Remove(symbolBg);
+            Destroy(symbolBg);
+        }
+
+        foreach (GameObject symbolBg in _reel4SymbolBgs)
+        {
+            if (symbolBg.transform.localPosition.y <= Reel.Row1LowerY)
+            {
+                symbolBgsToDestroy.Add(symbolBg);
+            }
+        }
+
+        foreach (GameObject symbolBg in symbolBgsToDestroy)
+        {
+            _reel4SymbolBgs.Remove(symbolBg);
+            Destroy(symbolBg);
+        }
     }
-
-    #region Spawn Explicit Symbols
-
-    // TODO: Add a UI menu that allows symbols to be spawned explicitly for testing. I.e., a max win button that will spawn the W,C,K,D symbols.
-
-
-
-    #endregion
 }

@@ -15,12 +15,23 @@ namespace Assets.Scripts
 
             foreach (GameObject parent in parents)
             {
+                if (parent == null)
+                {
+                    Debug.LogWarning("Destroyed symbol detected! Continuing iteration.");
+                    continue;
+                }
+
                 foreach (Transform childTransform in parent.transform)
                 {
                     GameObject child = childTransform.gameObject;
 
                     children.Add(child);
                 }
+            }
+
+            if (children.Count > 4)
+            {
+                Debug.LogError("Destroyed symbol detected!");
             }
 
             return children;

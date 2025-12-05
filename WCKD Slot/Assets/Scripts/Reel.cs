@@ -1,6 +1,8 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using NUnit.Framework;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.WSA;
@@ -112,27 +114,29 @@ public class Reel
 
     // moving these symbol backgrounds will also move the symbols since they are children
     // LeanTween package: https://assetstore.unity.com/packages/tools/animation/leantween-3595?srsltid=AfmBOop2h1UBbe3iDz6dv3jrd3SEZn__c-y-fd95XVgmqjvj3aloBEVS
-    public void Spin(List<GameObject> symbolBackgrounds, float spinDuration, Action<List<GameObject>> onComplete = null) // TODO: implement turbo spin button
+    public IEnumerator Spin(List<GameObject> symbolBackgrounds, float spinDuration) // TODO: implement turbo spin button
     {
-
+        bool isFinished = false;
+        
         // move the upper symbols into view of the slot machine
         LeanTween.moveY(symbolBackgrounds[4], Row1Y, spinDuration).setEase(LeanTweenType.easeOutBack);
         LeanTween.moveY(symbolBackgrounds[5], Row2Y, spinDuration).setEase(LeanTweenType.easeOutBack);
         LeanTween.moveY(symbolBackgrounds[6], Row3Y, spinDuration).setEase(LeanTweenType.easeOutBack);
-        LeanTween.moveY(symbolBackgrounds[7], Row4Y, spinDuration).setEase(LeanTweenType.easeOutBack);
+        LeanTween.moveY(symbolBackgrounds[7], Row4Y, spinDuration)
+                 .setEase(LeanTweenType.easeOutBack)
+                 .setOnComplete(() =>
+                 {
+                     isFinished = true;
+                 });
 
         // move the symbols already in view to out of view beneath the slot machine
         LeanTween.moveY(symbolBackgrounds[0], Row1LowerY, spinDuration).setEase(LeanTweenType.easeOutBack);
         LeanTween.moveY(symbolBackgrounds[1], Row2LowerY, spinDuration).setEase(LeanTweenType.easeOutBack);
         LeanTween.moveY(symbolBackgrounds[2], Row3LowerY, spinDuration).setEase(LeanTweenType.easeOutBack);
+        LeanTween.moveY(symbolBackgrounds[3], Row4LowerY, spinDuration).setEase(LeanTweenType.easeOutBack);
 
-        LeanTween.moveY(symbolBackgrounds[3], Row4LowerY, spinDuration)
-                 .setEase(LeanTweenType.easeOutBack)
-                 .setOnComplete(() =>
-                 {
-                     onComplete?.Invoke(symbolBackgrounds);
+        yield return new WaitUntil(() => isFinished);
 
-                 });
 
         // TODO: Implement sprite mask to prevent of view symbols from being shown. 
     }
