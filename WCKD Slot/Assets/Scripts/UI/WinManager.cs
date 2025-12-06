@@ -31,6 +31,19 @@ public class WinManager : MonoBehaviour
         // TODO: play spin sound effect
         print($"Spin button clicked!");
 
+        // this could be open/active
+        GameObject settingsPanel = GameObject.FindGameObjectWithTag(TagManager.SettingsPanel);
+        if (settingsPanel != null && settingsPanel.activeSelf)
+        {
+            settingsPanel.SetActive(false);
+        }
+
+        GameObject payTable = GameObject.FindGameObjectWithTag(TagManager.PayTable);
+        if (payTable != null && payTable.activeSelf)
+        {
+            payTable.SetActive(false);
+        }
+
         if (SlotMachine.State != State.Ready)
         {
             print($"Cannot spin while state is \"{SlotMachine.State}\"");

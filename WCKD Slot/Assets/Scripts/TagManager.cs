@@ -6,4 +6,6 @@ public static class TagManager
     public const string Reel2 = "Reel 2";
     public const string Reel3 = "Reel 3";
     public const string Reel4 = "Reel 4";
+    public const string SettingsPanel = "Settings Panel";
+    public const string PayTable = "Pay Table";
 }

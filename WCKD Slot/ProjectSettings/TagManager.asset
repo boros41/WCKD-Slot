@@ -8,6 +8,8 @@ TagManager:
   - Reel 2
   - Reel 3
   - Reel 4
+  - Settings Panel
+  - Pay Table
   layers:
   - Default
   - TransparentFX
