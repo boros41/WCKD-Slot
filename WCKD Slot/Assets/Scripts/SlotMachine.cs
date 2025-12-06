@@ -14,6 +14,8 @@ public class SlotMachine : MonoBehaviour
     #region Properties
     [SerializeField] private WinManager _winManager;
     [SerializeField] private float _spinDuration = 2.5f;
+    [SerializeField] private LeanTweenType _easingFunction;
+    [SerializeField] private AnimationCurve _customEasingFunction;
 
     public static State State;
     public static WinMode WinMode = WinMode.NormalPlay;

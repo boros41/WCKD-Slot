@@ -119,25 +119,51 @@ public class Reel
         bool isFinished = false;
         
         // move the upper symbols into view of the slot machine
-        LeanTween.moveY(symbolBackgrounds[4], Row1Y, spinDuration).setEase(LeanTweenType.easeOutBack);
-        LeanTween.moveY(symbolBackgrounds[5], Row2Y, spinDuration).setEase(LeanTweenType.easeOutBack);
-        LeanTween.moveY(symbolBackgrounds[6], Row3Y, spinDuration).setEase(LeanTweenType.easeOutBack);
+        LeanTween.moveY(symbolBackgrounds[4], Row1Y, spinDuration).setEase(SingleBounce());
+        LeanTween.moveY(symbolBackgrounds[5], Row2Y, spinDuration).setEase(SingleBounce());
+        LeanTween.moveY(symbolBackgrounds[6], Row3Y, spinDuration).setEase(SingleBounce());
         LeanTween.moveY(symbolBackgrounds[7], Row4Y, spinDuration)
-                 .setEase(LeanTweenType.easeOutBack)
+                 .setEase(SingleBounce())
                  .setOnComplete(() =>
                  {
                      isFinished = true;
                  });
 
         // move the symbols already in view to out of view beneath the slot machine
-        LeanTween.moveY(symbolBackgrounds[0], Row1LowerY, spinDuration).setEase(LeanTweenType.easeOutBack);
-        LeanTween.moveY(symbolBackgrounds[1], Row2LowerY, spinDuration).setEase(LeanTweenType.easeOutBack);
-        LeanTween.moveY(symbolBackgrounds[2], Row3LowerY, spinDuration).setEase(LeanTweenType.easeOutBack);
-        LeanTween.moveY(symbolBackgrounds[3], Row4LowerY, spinDuration).setEase(LeanTweenType.easeOutBack);
+        LeanTween.moveY(symbolBackgrounds[0], Row1LowerY, spinDuration).setEase(SingleBounce());
+        LeanTween.moveY(symbolBackgrounds[1], Row2LowerY, spinDuration).setEase(SingleBounce());
+        LeanTween.moveY(symbolBackgrounds[2], Row3LowerY, spinDuration).setEase(SingleBounce());
+        LeanTween.moveY(symbolBackgrounds[3], Row4LowerY, spinDuration).setEase(SingleBounce());
 
         yield return new WaitUntil(() => isFinished);
 
 
         // TODO: Implement sprite mask to prevent of view symbols from being shown. 
+    }
+
+    /*  The LeanTween library does not have a preset easing function that I want for this slot machine.
+     *  Because of this, I am using an AnimationCurve to define my own small bounce effect for the symbols when they finish moving/tweening.
+     *
+     *  The presets are defined here: https://easings.net/
+     *
+     *  I used the website https://easingwizard.com/#0a2m1n80x12C to create my custom bouncing easing function and prompted
+     *  GPT-5.1 to generate this method to return the AnimationCurve that represents the bouncing easing function in the website.*/
+    private static AnimationCurve SingleBounce()
+    {
+        var keys = new[]
+        {
+            new Keyframe(0.00f, 0.00f),  // start
+            new Keyframe(0.55f, 1.03f),  // tiny overshoot (+3%)
+            new Keyframe(0.72f, 0.98f),  // small dip (-2%)
+            new Keyframe(0.88f, 1.00f),  // settle
+            new Keyframe(1.00f, 1.00f),  // final value
+        };
+
+        var curve = new AnimationCurve(keys);
+
+        for (int i = 0; i < keys.Length; i++)
+            curve.SmoothTangents(i, 0f);
+
+        return curve;
     }
 }
