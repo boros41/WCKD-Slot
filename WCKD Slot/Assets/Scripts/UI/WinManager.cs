@@ -224,7 +224,7 @@ public class WinManager : MonoBehaviour
 
         if (IsFourLeafClover(allSymbols))
         {
-            print($"Four leaf clover win, awarding {Multiplier.FourLeafClover}x!");
+            print($"Four leaf clover win, awarding {(int)Multiplier.FourLeafClover}x!");
 
             List<GameObject> targetSymbols = GetTargetSymbols(allSymbols, Symbol.Clover);
             yield return StartCoroutine(AnimateSymbols(targetSymbols, (int)Multiplier.FourLeafClover));
@@ -232,14 +232,14 @@ public class WinManager : MonoBehaviour
 
         if (IsFourOf(allSymbols, Symbol.Skull))
         {
-            print($"Four skulls win, awarding {Multiplier.SkullFour}x!");
+            print($"Four skulls win, awarding {(int)Multiplier.SkullFour}x!");
 
             List<GameObject> targetSymbols = GetTargetSymbols(allSymbols, Symbol.Skull);
             yield return StartCoroutine(AnimateSymbols(targetSymbols, (int)Multiplier.SkullFour));
         }
         else if (IsThreeOf(allSymbols, Symbol.Skull))
         {
-            print($"Three skulls win, awarding {Multiplier.SkullThree}x!");
+            print($"Three skulls win, awarding {(int)Multiplier.SkullThree}x!");
 
             List<GameObject> targetSymbols = GetTargetSymbols(allSymbols, Symbol.Skull);
             yield return StartCoroutine(AnimateSymbols(targetSymbols, (int)Multiplier.SkullThree));
@@ -247,14 +247,14 @@ public class WinManager : MonoBehaviour
 
         if (IsFourOf(allSymbols, Symbol.Crocodile))
         {
-            print($"Four crocodiles win, awarding {Multiplier.CrocodileFour}x!");
+            print($"Four crocodiles win, awarding {(int)Multiplier.CrocodileFour}x!");
 
             List<GameObject> targetSymbols = GetTargetSymbols(allSymbols, Symbol.Crocodile);
             yield return StartCoroutine(AnimateSymbols(targetSymbols, (int)Multiplier.CrocodileFour));
         }
         else if (IsThreeOf(allSymbols, Symbol.Crocodile))
         {
-            print($"Three crocodiles win, awarding {Multiplier.CrocodileThree}x!");
+            print($"Three crocodiles win, awarding {(int)Multiplier.CrocodileThree}x!");
 
             List<GameObject> targetSymbols = GetTargetSymbols(allSymbols, Symbol.Crocodile);
             yield return StartCoroutine(AnimateSymbols(targetSymbols, (int)Multiplier.CrocodileThree));
@@ -262,14 +262,14 @@ public class WinManager : MonoBehaviour
 
         if (IsFourOf(allSymbols, Symbol.Raven))
         {
-            print($"Four ravens win, awarding {Multiplier.RavenFour}x!");
+            print($"Four ravens win, awarding {(int)Multiplier.RavenFour}x!");
 
             List<GameObject> targetSymbols = GetTargetSymbols(allSymbols, Symbol.Raven);
             yield return StartCoroutine(AnimateSymbols(targetSymbols, (int)Multiplier.RavenFour));
         }
         else if (IsThreeOf(allSymbols, Symbol.Raven))
         {
-            print($"Three ravens win, awarding {Multiplier.RavenThree}x!");
+            print($"Three ravens win, awarding {(int)Multiplier.RavenThree}x!");
 
             List<GameObject> targetSymbols = GetTargetSymbols(allSymbols, Symbol.Raven);
             yield return StartCoroutine(AnimateSymbols(targetSymbols, (int)Multiplier.RavenThree));
@@ -277,14 +277,14 @@ public class WinManager : MonoBehaviour
 
         if (IsFourOf(allSymbols, Symbol.Owl))
         {
-            print($"Four owls win, awarding {Multiplier.OwlFour}x!");
+            print($"Four owls win, awarding {(int)Multiplier.OwlFour}x!");
 
             List<GameObject> targetSymbols = GetTargetSymbols(allSymbols, Symbol.Owl);
             yield return StartCoroutine(AnimateSymbols(targetSymbols, (int)Multiplier.OwlFour));
         }
         else if (IsThreeOf(allSymbols, Symbol.Owl))
         {
-            print($"Three owls win, awarding {Multiplier.OwlThree}x!");
+            print($"Three owls win, awarding {(int)Multiplier.OwlThree}x!");
 
             List<GameObject> targetSymbols = GetTargetSymbols(allSymbols, Symbol.Owl);
             yield return StartCoroutine(AnimateSymbols(targetSymbols, (int)Multiplier.OwlThree));
@@ -292,14 +292,14 @@ public class WinManager : MonoBehaviour
 
         if (IsFourOf(allSymbols, Symbol.Bat))
         {
-            print($"Four bats win, awarding {Multiplier.BatFour}x!");
+            print($"Four bats win, awarding {(int)Multiplier.BatFour}x!");
 
             List<GameObject> targetSymbols = GetTargetSymbols(allSymbols, Symbol.Bat);
             yield return StartCoroutine(AnimateSymbols(targetSymbols, (int)Multiplier.BatFour));
         }
         else if (IsThreeOf(allSymbols, Symbol.Bat))
         {
-            print($"Three bats win, awarding {Multiplier.BatThree}x!");
+            print($"Three bats win, awarding {(int)Multiplier.BatThree}x!");
 
             List<GameObject> targetSymbols = GetTargetSymbols(allSymbols, Symbol.Bat);
             yield return StartCoroutine(AnimateSymbols(targetSymbols, (int)Multiplier.BatThree));
@@ -307,14 +307,14 @@ public class WinManager : MonoBehaviour
 
         if (IsFourOf(allSymbols, Symbol.Moth))
         {
-            print($"Four moths win, awarding {Multiplier.MothFour}x!");
+            print($"Four moths win, awarding {(int)Multiplier.MothFour}x!");
 
             List<GameObject> targetSymbols = GetTargetSymbols(allSymbols, Symbol.Moth);
             yield return StartCoroutine(AnimateSymbols(targetSymbols, (int)Multiplier.MothFour));
         }
         else if (IsThreeOf(allSymbols, Symbol.Moth))
         {
-            print($"Three moths win, awarding {Multiplier.MothThree}x!");
+            print($"Three moths win, awarding {(int)Multiplier.MothThree}x!");
 
             List<GameObject> targetSymbols = GetTargetSymbols(allSymbols, Symbol.Moth);
             yield return StartCoroutine(AnimateSymbols(targetSymbols, (int)Multiplier.MothThree));
@@ -322,14 +322,14 @@ public class WinManager : MonoBehaviour
 
         if (IsFourOf(allSymbols, Symbol.Spider))
         {
-            print($"Four spiders win, awarding {Multiplier.SpiderFour}x!");
+            print($"Four spiders win, awarding {(int)Multiplier.SpiderFour}x!");
 
             List<GameObject> targetSymbols = GetTargetSymbols(allSymbols, Symbol.Spider);
             yield return StartCoroutine(AnimateSymbols(targetSymbols, (int)Multiplier.SpiderFour));
         }
         else if (IsThreeOf(allSymbols, Symbol.Spider))
         {
-            print($"Three spiders win, awarding {Multiplier.SpiderThree}x!");
+            print($"Three spiders win, awarding {(int)Multiplier.SpiderThree}x!");
 
             List<GameObject> targetSymbols = GetTargetSymbols(allSymbols, Symbol.Spider);
             yield return StartCoroutine(AnimateSymbols(targetSymbols, (int)Multiplier.SpiderThree));
@@ -337,14 +337,14 @@ public class WinManager : MonoBehaviour
 
         if (IsFourOf(allSymbols, Symbol.Rose))
         {
-            print($"Four roses win, awarding {Multiplier.RoseFour}x!");
+            print($"Four roses win, awarding {(int)Multiplier.RoseFour}x!");
 
             List<GameObject> targetSymbols = GetTargetSymbols(allSymbols, Symbol.Rose);
             yield return StartCoroutine(AnimateSymbols(targetSymbols, (int)Multiplier.RoseFour));
         }
         else if (IsThreeOf(allSymbols, Symbol.Rose))
         {
-            print($"Three roses win, awarding {Multiplier.RoseThree}x!");
+            print($"Three roses win, awarding {(int)Multiplier.RoseThree}x!");
 
             List<GameObject> targetSymbols = GetTargetSymbols(allSymbols, Symbol.Rose);
             yield return StartCoroutine(AnimateSymbols(targetSymbols, (int)Multiplier.RoseThree));
@@ -352,14 +352,14 @@ public class WinManager : MonoBehaviour
 
         if (IsFourOf(allSymbols, Symbol.LilyPad))
         {
-            print($"Four lily pads win, awarding {Multiplier.LilyPadFour}x!");
+            print($"Four lily pads win, awarding {(int)Multiplier.LilyPadFour}x!");
 
             List<GameObject> targetSymbols = GetTargetSymbols(allSymbols, Symbol.LilyPad);
             yield return StartCoroutine(AnimateSymbols(targetSymbols, (int)Multiplier.LilyPadFour));
         }
         else if (IsThreeOf(allSymbols, Symbol.LilyPad))
         {
-            print($"Three lily pads win, awarding {Multiplier.LilyPadThree}x!");
+            print($"Three lily pads win, awarding {(int)Multiplier.LilyPadThree}x!");
 
             List<GameObject> targetSymbols = GetTargetSymbols(allSymbols, Symbol.LilyPad);
             yield return StartCoroutine(AnimateSymbols(targetSymbols, (int)Multiplier.LilyPadThree));
@@ -367,14 +367,14 @@ public class WinManager : MonoBehaviour
 
         if (IsFourOf(allSymbols, Symbol.Flower))
         {
-            print($"Four flowers win, awarding {Multiplier.FlowerFour}x!");
+            print($"Four flowers win, awarding {(int)Multiplier.FlowerFour}x!");
 
             List<GameObject> targetSymbols = GetTargetSymbols(allSymbols, Symbol.Flower);
             yield return StartCoroutine(AnimateSymbols(targetSymbols, (int)Multiplier.FlowerFour));
         }
         else if (IsThreeOf(allSymbols, Symbol.Flower))
         {
-            print($"Three flowers win, awarding {Multiplier.FlowerThree}x!");
+            print($"Three flowers win, awarding {(int)Multiplier.FlowerThree}x!");
 
             List<GameObject> targetSymbols = GetTargetSymbols(allSymbols, Symbol.Flower);
             yield return StartCoroutine(AnimateSymbols(targetSymbols, (int)Multiplier.FlowerThree));
@@ -382,14 +382,14 @@ public class WinManager : MonoBehaviour
 
         if (IsFourOf(allSymbols, Symbol.DeadTree))
         {
-            print($"Four dead trees win, awarding {Multiplier.DeadTreeFour}x!");
+            print($"Four dead trees win, awarding {(int)Multiplier.DeadTreeFour}x!");
 
             List<GameObject> targetSymbols = GetTargetSymbols(allSymbols, Symbol.DeadTree);
             yield return StartCoroutine(AnimateSymbols(targetSymbols, (int)Multiplier.DeadTreeFour));
         }
         else if (IsThreeOf(allSymbols, Symbol.DeadTree))
         {
-            print($"Three dead trees win, awarding {Multiplier.DeadTreeThree}x!");
+            print($"Three dead trees win, awarding {(int)Multiplier.DeadTreeThree}x!");
 
             List<GameObject> targetSymbols = GetTargetSymbols(allSymbols, Symbol.DeadTree);
             yield return StartCoroutine(AnimateSymbols(targetSymbols, (int)Multiplier.DeadTreeThree));
