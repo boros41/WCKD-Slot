@@ -168,7 +168,7 @@ public class WinManager : MonoBehaviour
 
             const int spinsRemaining = 12;
 
-            // TODO: move to method
+            // TODO: move before and after to method
             _spinBtn.SetActive(false);
             _freeSpinTitle.SetActive(true);
             _freeSpinAmountTMP.gameObject.SetActive(true);
@@ -177,6 +177,9 @@ public class WinManager : MonoBehaviour
             // in case we explicitly entered the bonus via settings
             if (SlotMachine.WinMode == WinMode.SuperBonus)
                 SlotMachine.WinMode = WinMode.NormalPlay;
+
+            List<GameObject> targetSymbols = GetTargetSymbols(allSymbols, Symbol.Frog);
+            yield return StartCoroutine(AnimateSymbols(targetSymbols));
 
             yield return StartCoroutine(RunFreeSpins(spinsRemaining));
 
@@ -203,6 +206,9 @@ public class WinManager : MonoBehaviour
 
             if (SlotMachine.WinMode == WinMode.Bonus)
                 SlotMachine.WinMode = WinMode.NormalPlay;
+
+            List<GameObject> targetSymbols = GetTargetSymbols(allSymbols, Symbol.Frog);
+            yield return StartCoroutine(AnimateSymbols(targetSymbols));
 
             yield return StartCoroutine(RunFreeSpins(spinsRemaining));
 
@@ -421,31 +427,39 @@ public class WinManager : MonoBehaviour
                                       .setOnComplete(() => isFinished = true);
                          }
                      });
-
-            /*if (currentSymbol != lastSymbol)
-            {
-                LeanTween.scale(currentSymbol, new Vector3(1.2f, 1.2f, 1f), 0.5f)
-                         .setOnComplete(() =>
-                         {
-                             LeanTween.scale(currentSymbol, Vector3.one, 0.5f);
-                         });
-            }
-            else
-            {
-                LeanTween.scale(currentSymbol, new Vector3(1.2f, 1.2f, 1f), 0.5f)
-                         .setOnComplete(() =>
-                         {
-                             LeanTween.scale(currentSymbol, Vector3.one, 0.5f)
-                                      .setOnComplete(() => isFinished = true);
-                         });
-            }*/
         }
 
         UpdateBalance(multiplier);
         DisplayTotalWin(multiplier);
 
         yield return new WaitUntil(() => isFinished);
+    }
 
+    private IEnumerator AnimateSymbols(List<GameObject> symbols)
+    {
+        bool isFinished = false;
+        GameObject lastSymbol = symbols[^1];
+
+        _winSoundFx.Play();
+
+        foreach (GameObject currentSymbol in symbols)
+        {
+            LeanTween.scale(currentSymbol, new Vector3(1.2f, 1.2f, 1f), 0.5f)
+                     .setOnComplete(() =>
+                     {
+                         if (currentSymbol != lastSymbol)
+                         {
+                             LeanTween.scale(currentSymbol, Vector3.one, 0.5f);
+                         }
+                         else
+                         {
+                             LeanTween.scale(currentSymbol, Vector3.one, 0.5f)
+                                      .setOnComplete(() => isFinished = true);
+                         }
+                     });
+        }
+
+        yield return new WaitUntil(() => isFinished);
     }
 
     private void DisplayPerSymbolWin(List<GameObject> symbols, int multiplier)
