@@ -13,9 +13,6 @@ public class SlotMachine : MonoBehaviour
 {
     #region Properties
     [SerializeField] private WinManager _winManager;
-    [SerializeField] private float _spinDuration = 2.5f;
-    [SerializeField] private LeanTweenType _easingFunction;
-    [SerializeField] private AnimationCurve _customEasingFunction;
 
     public static State State;
     public static WinMode WinMode = WinMode.NormalPlay;
@@ -426,23 +423,23 @@ public class SlotMachine : MonoBehaviour
 
         // TODO: refactor callback into lambda
         //_reel1.Spin(reel1SymbolBgs, _spinDuration);
-        StartCoroutine(_reel1.Spin(_reel1SymbolBgs, _spinDuration));
+        StartCoroutine(_reel1.Spin(_reel1SymbolBgs, TurboSpinButton.SpinDuration));
 
         yield return new WaitForSeconds(delay);
 
         //_reel2.Spin(reel2SymbolBgs, _spinDuration);
-        StartCoroutine(_reel2.Spin(_reel2SymbolBgs, _spinDuration));
+        StartCoroutine(_reel2.Spin(_reel2SymbolBgs, TurboSpinButton.SpinDuration));
 
         yield return new WaitForSeconds(delay);
 
         //_reel3.Spin(reel3SymbolBgs, _spinDuration);
-        StartCoroutine(_reel3.Spin(_reel3SymbolBgs, _spinDuration));
+        StartCoroutine(_reel3.Spin(_reel3SymbolBgs, TurboSpinButton.SpinDuration));
 
         yield return new WaitForSeconds(delay);
 
         //_reel4.Spin(reel4SymbolBgs, _spinDuration);
 
-        yield return StartCoroutine(_reel4.Spin(_reel4SymbolBgs, _spinDuration));
+        yield return StartCoroutine(_reel4.Spin(_reel4SymbolBgs, TurboSpinButton.SpinDuration));
 
         //yield return new WaitUntil(() => spinFinished);
 
