@@ -12,6 +12,7 @@ using Random = UnityEngine.Random;
 
 public class Reel
 {
+    #region Properties
     public ReadOnlyCollection<Symbol> Strip { get; }
     private int _stopIndex;
     private readonly List<int> _stopIndices = new List<int>(4); // 4 == visible reel length
@@ -38,6 +39,7 @@ public class Reel
     public const float Row2LowerY = -3.7386666f;
     public const float Row3LowerY = -4.8059999f;
     public const float Row4LowerY = -5.8733332f;
+    #endregion
 
     public Reel(ReadOnlyCollection<Symbol> strip)
     {
@@ -112,7 +114,8 @@ public class Reel
         Debug.Log($"Reel {reel} symbols: {numberedSymbols}");
     }
 
-    // moving these symbol backgrounds will also move the symbols since they are children
+    // Moving these symbol backgrounds will also move the symbols since they are children
+    // NOTE: I originally had a sprite for the symbol background parent but not anymore so it'd be best to refactor and move the symbols themselves
     // LeanTween package: https://assetstore.unity.com/packages/tools/animation/leantween-3595?srsltid=AfmBOop2h1UBbe3iDz6dv3jrd3SEZn__c-y-fd95XVgmqjvj3aloBEVS
     public IEnumerator Spin(List<GameObject> symbolBackgrounds, float spinDuration) // TODO: implement turbo spin button
     {

@@ -403,7 +403,6 @@ public class SlotMachine : MonoBehaviour
     
     #endregion
 
-
     public IEnumerator SpinReels()
     {
         SlotMachine.State = State.Spinning;

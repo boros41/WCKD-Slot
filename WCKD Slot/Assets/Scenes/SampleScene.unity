@@ -2959,7 +2959,7 @@ SpriteMask:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 935520735}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -4948,8 +4948,8 @@ SceneRoots:
   m_Roots:
   - {fileID: 519420032}
   - {fileID: 619394802}
-  - {fileID: 880561293}
   - {fileID: 919437860}
+  - {fileID: 880561293}
   - {fileID: 1411668789}
   - {fileID: 2067942619}
   - {fileID: 1937466990}

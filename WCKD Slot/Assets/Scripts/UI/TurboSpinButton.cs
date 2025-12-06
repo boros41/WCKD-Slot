@@ -16,7 +16,7 @@ public class TurboSpinButton : MonoBehaviour
     {
         _isOn = !_isOn;
 
-        print(_isOn ? $"Turbo spin is now on!" : $"Turbo spin is now off!");
+        print(_isOn ? "Turbo spin is now on!" : "Turbo spin is now off!");
 
         SpinDuration = _isOn ? 0.5f : 1f;
 

@@ -22,15 +22,9 @@ public class WinManager : MonoBehaviour
 
     private float _playAmount = 1f;
     private float _balance = 1000f;
-    #endregion
 
-    private void Update()
-    {
-        /*if (SlotMachine.State == State.CalculatingWins)
-        {
-            StartCoroutine(CalculateWins());
-        }*/
-    }
+    private static float _popupWinTextCachedY;
+    #endregion
 
     public void OnSpinClick()
     {
@@ -56,7 +50,7 @@ public class WinManager : MonoBehaviour
         StartCoroutine(_slotMachine.SpinReels());
     }
 
-    public void UpdateBalance(float multiplier)
+    public void UpdateBalance(int multiplier)
     {
         float winAmount = _playAmount * multiplier;
         float oldWinAmount = float.Parse(_winAmountTMP.text[1..]); // in case there are multiple wins at once
@@ -149,12 +143,10 @@ public class WinManager : MonoBehaviour
         // TODO: For each of these, try to tween the scale of the symbols to highlight the winning symbols for dramatic effect
         if (IsMaxWin(allSymbols))
         {
-            print("Awarding max win amount!");
+            print($"Awarding max win amount! {(int)Multiplier.WCKD}x!");
 
             List<GameObject> targetSymbols = GetTargetSymbols(allSymbols, targetSymbols:new List<Symbol>() { Symbol.W , Symbol.C, Symbol.K, Symbol.D});
-            yield return StartCoroutine(AnimateSymbols(targetSymbols));
-
-            UpdateBalance(multiplier: 5000);
+            yield return StartCoroutine(AnimateSymbols(targetSymbols, (int)Multiplier.WCKD));
         }
 
         if (IsSuperBonus(allSymbols))
@@ -213,258 +205,193 @@ public class WinManager : MonoBehaviour
 
         if (IsFourLeafClover(allSymbols))
         {
-            const int multiplier = 400;
-            print($"Four leaf clover win, awarding {multiplier}x!");
+            print($"Four leaf clover win, awarding {Multiplier.FourLeafClover}x!");
 
             List<GameObject> targetSymbols = GetTargetSymbols(allSymbols, Symbol.Clover);
-            yield return StartCoroutine(AnimateSymbols(targetSymbols));
-
-            UpdateBalance(multiplier);
+            yield return StartCoroutine(AnimateSymbols(targetSymbols, (int)Multiplier.FourLeafClover));
         }
 
         if (IsFourOf(allSymbols, Symbol.Skull))
         {
-            const int multiplier = 50;
-            print($"Four skulls win, awarding {multiplier}x!");
+            print($"Four skulls win, awarding {Multiplier.SkullFour}x!");
 
             List<GameObject> targetSymbols = GetTargetSymbols(allSymbols, Symbol.Skull);
-            yield return StartCoroutine(AnimateSymbols(targetSymbols));
-
-            UpdateBalance(multiplier);
+            yield return StartCoroutine(AnimateSymbols(targetSymbols, (int)Multiplier.SkullFour));
         }
         else if (IsThreeOf(allSymbols, Symbol.Skull))
         {
-            const int multiplier = 30;
-            print($"Three skulls win, awarding {multiplier}x!");
+            print($"Three skulls win, awarding {Multiplier.SkullThree}x!");
 
             List<GameObject> targetSymbols = GetTargetSymbols(allSymbols, Symbol.Skull);
-            yield return StartCoroutine(AnimateSymbols(targetSymbols));
-
-            UpdateBalance(multiplier);
+            yield return StartCoroutine(AnimateSymbols(targetSymbols, (int)Multiplier.SkullThree));
         }
 
         if (IsFourOf(allSymbols, Symbol.Crocodile))
         {
-            const int multiplier = 50;
-            print($"Four crocodiles win, awarding {multiplier}x!");
+            print($"Four crocodiles win, awarding {Multiplier.CrocodileFour}x!");
 
             List<GameObject> targetSymbols = GetTargetSymbols(allSymbols, Symbol.Crocodile);
-            yield return StartCoroutine(AnimateSymbols(targetSymbols));
-
-            UpdateBalance(multiplier);
+            yield return StartCoroutine(AnimateSymbols(targetSymbols, (int)Multiplier.CrocodileFour));
         }
         else if (IsThreeOf(allSymbols, Symbol.Crocodile))
         {
-            const int multiplier = 30;
-            print($"Three crocodiles win, awarding {multiplier}x!");
+            print($"Three crocodiles win, awarding {Multiplier.CrocodileThree}x!");
 
             List<GameObject> targetSymbols = GetTargetSymbols(allSymbols, Symbol.Crocodile);
-            yield return StartCoroutine(AnimateSymbols(targetSymbols));
-
-            UpdateBalance(multiplier);
+            yield return StartCoroutine(AnimateSymbols(targetSymbols, (int)Multiplier.CrocodileThree));
         }
 
         if (IsFourOf(allSymbols, Symbol.Raven))
         {
-            const int multiplier = 20;
-            print($"Four ravens win, awarding {multiplier}x!");
+            print($"Four ravens win, awarding {Multiplier.RavenFour}x!");
 
             List<GameObject> targetSymbols = GetTargetSymbols(allSymbols, Symbol.Raven);
-            yield return StartCoroutine(AnimateSymbols(targetSymbols));
-
-            UpdateBalance(multiplier);
+            yield return StartCoroutine(AnimateSymbols(targetSymbols, (int)Multiplier.RavenFour));
         }
         else if (IsThreeOf(allSymbols, Symbol.Raven))
         {
-            const int multiplier = 10;
-            print($"Three ravens win, awarding {multiplier}x!");
+            print($"Three ravens win, awarding {Multiplier.RavenThree}x!");
 
             List<GameObject> targetSymbols = GetTargetSymbols(allSymbols, Symbol.Raven);
-            yield return StartCoroutine(AnimateSymbols(targetSymbols));
-
-            UpdateBalance(multiplier);
+            yield return StartCoroutine(AnimateSymbols(targetSymbols, (int)Multiplier.RavenThree));
         }
 
         if (IsFourOf(allSymbols, Symbol.Owl))
         {
-            const int multiplier = 3;
-            print($"Four owls win, awarding {multiplier}x!");
+            print($"Four owls win, awarding {Multiplier.OwlFour}x!");
 
             List<GameObject> targetSymbols = GetTargetSymbols(allSymbols, Symbol.Owl);
-            yield return StartCoroutine(AnimateSymbols(targetSymbols));
-
-            UpdateBalance(multiplier);
+            yield return StartCoroutine(AnimateSymbols(targetSymbols, (int)Multiplier.OwlFour));
         }
         else if (IsThreeOf(allSymbols, Symbol.Owl))
         {
-            const int multiplier = 2;
-            print($"Three owls win, awarding {multiplier}x!");
+            print($"Three owls win, awarding {Multiplier.OwlThree}x!");
 
             List<GameObject> targetSymbols = GetTargetSymbols(allSymbols, Symbol.Owl);
-            yield return StartCoroutine(AnimateSymbols(targetSymbols));
-
-            UpdateBalance(multiplier);
+            yield return StartCoroutine(AnimateSymbols(targetSymbols, (int)Multiplier.OwlThree));
         }
 
         if (IsFourOf(allSymbols, Symbol.Bat))
         {
-            const int multiplier = 5;
-            print($"Four bats win, awarding {multiplier}x!");
+            print($"Four bats win, awarding {Multiplier.BatFour}x!");
 
             List<GameObject> targetSymbols = GetTargetSymbols(allSymbols, Symbol.Bat);
-            yield return StartCoroutine(AnimateSymbols(targetSymbols));
-
-            UpdateBalance(multiplier);
+            yield return StartCoroutine(AnimateSymbols(targetSymbols, (int)Multiplier.BatFour));
         }
         else if (IsThreeOf(allSymbols, Symbol.Bat))
         {
-            const int multiplier = 4;
-            print($"Three bats win, awarding {multiplier}x!");
+            print($"Three bats win, awarding {Multiplier.BatThree}x!");
 
             List<GameObject> targetSymbols = GetTargetSymbols(allSymbols, Symbol.Bat);
-            yield return StartCoroutine(AnimateSymbols(targetSymbols));
-
-            UpdateBalance(multiplier);
+            yield return StartCoroutine(AnimateSymbols(targetSymbols, (int)Multiplier.BatThree));
         }
 
         if (IsFourOf(allSymbols, Symbol.Moth))
         {
-            const int multiplier = 3;
-            print($"Four moths win, awarding {multiplier}x!");
+            print($"Four moths win, awarding {Multiplier.MothFour}x!");
 
             List<GameObject> targetSymbols = GetTargetSymbols(allSymbols, Symbol.Moth);
-            yield return StartCoroutine(AnimateSymbols(targetSymbols));
-
-            UpdateBalance(multiplier);
+            yield return StartCoroutine(AnimateSymbols(targetSymbols, (int)Multiplier.MothFour));
         }
         else if (IsThreeOf(allSymbols, Symbol.Moth))
         {
-            const int multiplier = 2;
-            print($"Three moths win, awarding {multiplier}x!");
+            print($"Three moths win, awarding {Multiplier.MothThree}x!");
 
             List<GameObject> targetSymbols = GetTargetSymbols(allSymbols, Symbol.Moth);
-            yield return StartCoroutine(AnimateSymbols(targetSymbols));
-
-            UpdateBalance(multiplier);
+            yield return StartCoroutine(AnimateSymbols(targetSymbols, (int)Multiplier.MothThree));
         }
 
         if (IsFourOf(allSymbols, Symbol.Spider))
         {
-            const int multiplier = 3;
-            print($"Four spiders win, awarding {multiplier}x!");
+            print($"Four spiders win, awarding {Multiplier.SpiderFour}x!");
 
             List<GameObject> targetSymbols = GetTargetSymbols(allSymbols, Symbol.Spider);
-            yield return StartCoroutine(AnimateSymbols(targetSymbols));
-
-            UpdateBalance(multiplier);
+            yield return StartCoroutine(AnimateSymbols(targetSymbols, (int)Multiplier.SpiderFour));
         }
         else if (IsThreeOf(allSymbols, Symbol.Spider))
         {
-            const int multiplier = 2;
-            print($"Three spiders win, awarding {multiplier}x!");
+            print($"Three spiders win, awarding {Multiplier.SpiderThree}x!");
 
             List<GameObject> targetSymbols = GetTargetSymbols(allSymbols, Symbol.Spider);
-            yield return StartCoroutine(AnimateSymbols(targetSymbols));
-
-            UpdateBalance(multiplier);
+            yield return StartCoroutine(AnimateSymbols(targetSymbols, (int)Multiplier.SpiderThree));
         }
 
         if (IsFourOf(allSymbols, Symbol.Rose))
         {
-            const int multiplier = 3;
-            print($"Four roses win, awarding {multiplier}x!");
+            print($"Four roses win, awarding {Multiplier.RoseFour}x!");
 
             List<GameObject> targetSymbols = GetTargetSymbols(allSymbols, Symbol.Rose);
-            yield return StartCoroutine(AnimateSymbols(targetSymbols));
-
-            UpdateBalance(multiplier);
+            yield return StartCoroutine(AnimateSymbols(targetSymbols, (int)Multiplier.RoseFour));
         }
         else if (IsThreeOf(allSymbols, Symbol.Rose))
         {
-            const int multiplier = 2;
-            print($"Three roses win, awarding {multiplier}x!");
+            print($"Three roses win, awarding {Multiplier.RoseThree}x!");
 
             List<GameObject> targetSymbols = GetTargetSymbols(allSymbols, Symbol.Rose);
-            yield return StartCoroutine(AnimateSymbols(targetSymbols));
-
-            UpdateBalance(multiplier);
+            yield return StartCoroutine(AnimateSymbols(targetSymbols, (int)Multiplier.RoseThree));
         }
 
         if (IsFourOf(allSymbols, Symbol.LilyPad))
         {
-            const int multiplier = 2;
-            print($"Four lily pads win, awarding {multiplier}x!");
+            print($"Four lily pads win, awarding {Multiplier.LilyPadFour}x!");
 
             List<GameObject> targetSymbols = GetTargetSymbols(allSymbols, Symbol.LilyPad);
-            yield return StartCoroutine(AnimateSymbols(targetSymbols));
-
-            UpdateBalance(multiplier);
+            yield return StartCoroutine(AnimateSymbols(targetSymbols, (int)Multiplier.LilyPadFour));
         }
         else if (IsThreeOf(allSymbols, Symbol.LilyPad))
         {
-            const int multiplier = 1;
-            print($"Three lily pads win, awarding {multiplier}x!");
+            print($"Three lily pads win, awarding {Multiplier.LilyPadThree}x!");
 
             List<GameObject> targetSymbols = GetTargetSymbols(allSymbols, Symbol.LilyPad);
-            yield return StartCoroutine(AnimateSymbols(targetSymbols));
-
-            UpdateBalance(multiplier);
+            yield return StartCoroutine(AnimateSymbols(targetSymbols, (int)Multiplier.LilyPadThree));
         }
 
         if (IsFourOf(allSymbols, Symbol.Flower))
         {
-            const int multiplier = 2;
-            print($"Four flowers win, awarding {multiplier}x!");
+            print($"Four flowers win, awarding {Multiplier.FlowerFour}x!");
 
             List<GameObject> targetSymbols = GetTargetSymbols(allSymbols, Symbol.Flower);
-            yield return StartCoroutine(AnimateSymbols(targetSymbols));
-
-            UpdateBalance(multiplier);
+            yield return StartCoroutine(AnimateSymbols(targetSymbols, (int)Multiplier.FlowerFour));
         }
         else if (IsThreeOf(allSymbols, Symbol.Flower))
         {
-            const int multiplier = 1;
-            print($"Three flowers win, awarding {multiplier}x!");
+            print($"Three flowers win, awarding {Multiplier.FlowerThree}x!");
 
             List<GameObject> targetSymbols = GetTargetSymbols(allSymbols, Symbol.Flower);
-            yield return StartCoroutine(AnimateSymbols(targetSymbols));
-
-            UpdateBalance(multiplier);
+            yield return StartCoroutine(AnimateSymbols(targetSymbols, (int)Multiplier.FlowerThree));
         }
 
         if (IsFourOf(allSymbols, Symbol.DeadTree))
         {
-            const int multiplier = 2;
-            print($"Four dead trees win, awarding {multiplier}x!");
+            print($"Four dead trees win, awarding {Multiplier.DeadTreeFour}x!");
 
             List<GameObject> targetSymbols = GetTargetSymbols(allSymbols, Symbol.DeadTree);
-            yield return StartCoroutine(AnimateSymbols(targetSymbols));
-
-            UpdateBalance(multiplier);
+            yield return StartCoroutine(AnimateSymbols(targetSymbols, (int)Multiplier.DeadTreeFour));
         }
         else if (IsThreeOf(allSymbols, Symbol.DeadTree))
         {
-            const int multiplier = 1;
-            print($"Three dead trees win, awarding {multiplier}x!");
+            print($"Three dead trees win, awarding {Multiplier.DeadTreeThree}x!");
 
             List<GameObject> targetSymbols = GetTargetSymbols(allSymbols, Symbol.DeadTree);
-            yield return StartCoroutine(AnimateSymbols(targetSymbols));
-
-            UpdateBalance(multiplier);
+            yield return StartCoroutine(AnimateSymbols(targetSymbols, (int)Multiplier.DeadTreeThree));
         }
 
         #endregion
 
+        _popupWinTextCachedY = 0; // all wins finished, reset
         SlotMachine.State = State.Ready;
         print($"Current state: {SlotMachine.State}");
     }
 
-    private IEnumerator AnimateSymbols(List<GameObject> symbols)
+    // symbols: winning number of a particular set of symbols i.e., four clovers
+    private IEnumerator AnimateSymbols(List<GameObject> symbols, int multiplier)
     {
         bool isFinished = false;
         GameObject lastSymbol = symbols[^1];
 
         _winSoundFx.Play();
+
+        DisplayPerSymbolWin(symbols, multiplier);
 
         foreach (GameObject currentSymbol in symbols)
         {
@@ -501,7 +428,66 @@ public class WinManager : MonoBehaviour
             }*/
         }
 
+        UpdateBalance(multiplier);
+        DisplayTotalWin(multiplier);
+
         yield return new WaitUntil(() => isFinished);
+
+    }
+
+    private void DisplayPerSymbolWin(List<GameObject> symbols, int multiplier)
+    {
+        if (!symbols.Any())
+        {
+            print("Unable to animate popup win text, symbols list was empty");
+            return;
+        }
+
+        float perSymbolContribution = (multiplier * _playAmount) / symbols.Count;
+        const string path = "Prefabs/WinTexts/PopupWinText";
+        GameObject popupWinTextPrefab = Resources.Load<GameObject>(path);
+
+        foreach (Transform winTextCanvas in popupWinTextPrefab.transform)
+        {
+            foreach (Transform winTextTransform in winTextCanvas.gameObject.transform)
+            {
+                TextMeshProUGUI winText = winTextTransform.gameObject.GetComponent<TextMeshProUGUI>();
+                winText.text = $"{perSymbolContribution:C}";
+            }
+        }
+
+        foreach (GameObject currentSymbol in symbols)
+        {
+            // since this will be a child to currentSymbol, it will in turn be tween scaled in AnimateSymbols()
+            GameObject popupWinText = Instantiate(popupWinTextPrefab, parent:currentSymbol.transform);
+            float moveTo = popupWinText.transform.position.y + 0.3f;
+
+            LeanTween.moveY(popupWinText, moveTo, 1f)
+                     .setOnComplete(() => Destroy(popupWinText));
+        }
+    }
+
+    private void DisplayTotalWin(int multiplier)
+    {
+        float totalWin = multiplier * _playAmount;
+        const string path = "Prefabs/WinTexts/PopupWinText";
+        GameObject popupWinTextPrefab = Resources.Load<GameObject>(path);
+
+        foreach (Transform winTextCanvas in popupWinTextPrefab.transform)
+        {
+            foreach (Transform winTextTransform in winTextCanvas.gameObject.transform)
+            {
+                TextMeshProUGUI winText = winTextTransform.gameObject.GetComponent<TextMeshProUGUI>();
+                winText.text = $"{totalWin:C}";
+            }
+        }
+
+        GameObject popupWinText = Instantiate(popupWinTextPrefab, new Vector2(0, _popupWinTextCachedY), Quaternion.identity);
+        float moveTo = _popupWinTextCachedY + 0.3f;
+        _popupWinTextCachedY = moveTo;
+
+        LeanTween.moveY(popupWinText, moveTo, 1f)
+                 .setOnComplete(() => Destroy(popupWinText));
     }
 
     private bool IsMaxWin(List<GameObject> allSymbols)
